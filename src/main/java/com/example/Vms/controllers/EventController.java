@@ -6,10 +6,7 @@ import com.example.Vms.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/event")
@@ -21,5 +18,10 @@ public class EventController {
         System.out.println(eventModel);
         Event event =  eventService.save(eventModel);
         return new ResponseEntity<>(event, HttpStatus.CREATED);
+    }
+    @DeleteMapping("/delete")
+    public ResponseEntity<?> delete(@RequestParam int eid){
+        String result = eventService.deleteEvent(eid);
+        return ResponseEntity.ok(result);
     }
 }

@@ -31,7 +31,7 @@ public class Organisation {
     @ManyToMany(mappedBy = "organisations",cascade =  { CascadeType.PERSIST, CascadeType.MERGE,CascadeType.REMOVE},fetch = FetchType.EAGER)
     @JsonIgnore
     private List<Event> events;
-    @ManyToMany(mappedBy = "organisations",cascade =  { CascadeType.PERSIST, CascadeType.MERGE,CascadeType.REMOVE},fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "organisations",cascade =  { CascadeType.PERSIST, CascadeType.MERGE},fetch = FetchType.EAGER)
    @JsonIgnore
     private List<User> users = new ArrayList<>();
     public Organisation(OrganisationModel organisation){

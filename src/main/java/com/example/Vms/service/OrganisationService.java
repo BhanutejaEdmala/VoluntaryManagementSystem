@@ -11,6 +11,7 @@ import com.example.Vms.repositories.EventRepo;
 import com.example.Vms.repositories.OrganisationRepo;
 import com.example.Vms.repositories.UserRepo;
 import com.example.Vms.repositories.VolunteerRepo;
+import jakarta.transaction.Transactional;
 import org.antlr.v4.runtime.atn.SemanticContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
@@ -129,5 +130,40 @@ public String sentMessage(int vid, int oid, String message){
            return "No Such Event Found In This Organisation";
         }
         return "No Data Found";
+    }
+    @Transactional
+    public String removeOrganization(int oid) {
+        Organisation organisation = organisationRepo.findById(oid).orElse(null);
+        if (organisation != null) {
+            // Retrieve related entities
+            List<Volunteer> volunteers = new ArrayList<>(organisation.getVolunteers());
+            List<Event> events = organisation.getEvents();
+
+            // Remove the organization from related volunteers
+            volunteers.stream().filter(i -> i.getOrganisations().contains(organisation))
+                    .forEach(volunteer -> {
+                        volunteer.getOrganisations().remove(organisation);
+                        volunteerRepo.delete(volunteer);
+                    });
+
+
+            // Remove the organization from related events
+            events.stream().filter(i->i.getOrganisations().contains(organisation)).forEach(event -> event.getOrganisations().remove(organisation));
+
+            // Clear organization references from related entities
+            organisation.getVolunteers().clear();
+            organisation.getEvents().clear();
+
+            // Remove the organization from users
+            List<User> users = organisation.getUsers();
+            users.forEach(user -> user.getOrganisations().remove(organisation));
+            organisation.getUsers().clear();
+
+            // Save changes
+            organisationRepo.save(organisation);
+            organisationRepo.delete(organisation);
+            return "Organisation with ID " + oid + " has been removed.";
+        }
+        return "Organisation with ID " + oid + " does not exist.";
     }
 }

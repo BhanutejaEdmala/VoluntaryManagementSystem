@@ -61,4 +61,9 @@ public class OrganisationController {
     String result = organisationService.suggestVolunteers(eid,oid);
     return ResponseEntity.ok(result);
 }
+@DeleteMapping("/delete")
+    public ResponseEntity<?> deleteOrganisation(@RequestParam int oid){
+    String result = organisationService.removeOrganization(oid);
+    return ResponseEntity.ok(result);
+}
 }

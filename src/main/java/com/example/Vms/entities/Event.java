@@ -21,6 +21,7 @@ public class Event {
     private String location;
     private String date;
     private Set<String> skills_good_to_have;
+    private String status;
     @JsonIgnore
     @ManyToMany(cascade =  { CascadeType.PERSIST, CascadeType.MERGE },fetch = FetchType.EAGER)
     @JoinTable(
@@ -30,7 +31,7 @@ public class Event {
     )
     private List<Organisation> organisations;
     @JsonIgnore
-    @ManyToMany(mappedBy = "events",cascade = {CascadeType.PERSIST,CascadeType.MERGE,CascadeType.REMOVE},fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "events",cascade = {CascadeType.PERSIST,CascadeType.MERGE},fetch = FetchType.EAGER)
     private List<Volunteer> volunteerList;
 
     @Override

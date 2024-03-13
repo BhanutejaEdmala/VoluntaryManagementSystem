@@ -8,6 +8,7 @@ import com.example.Vms.repositories.UserRepo;
 import com.example.Vms.repositories.EventRepo;
 import com.example.Vms.repositories.OrganisationRepo;
 import com.example.Vms.repositories.VolunteerRepo;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -67,4 +68,53 @@ public class VolunteerService {
         }
         return null;
    }
+   public String CompleteEvent(int vid,int eid,int oid){
+        Event event = eventRepo.findById(eid).orElse(null);
+        Organisation organisation = organisationRepo.findById(eid).orElse(null);
+        Volunteer volunteer = volunteerRepo.findById(vid).orElse(null);
+        if(event!=null&&organisation!=null){
+               List<Event> events = organisation.getEvents();
+               if(events.contains(event)){
+                   if(volunteer!=null){
+                      User user = volunteer.getUser();
+                      List<String> certificates = user.getCertificates();
+                      certificates.add(user.getName()+"  has participated in the event "+event.getName()+" held in our organisation "+organisation.getName());
+                      user.setCertificates(certificates);
+                      userRepo.save(user);
+                    }
+                   return "Volunteer Doesn't Exist";
+               }
+               return "This Event Doesn't Exist In This Organisation";
+        }
+        return  "Data Not Found";
+   }
+   @Transactional
+    public String deleteVolunteer(int vid) {
+        Volunteer volunteer = volunteerRepo.findById(vid).orElse(null);
+        if (volunteer != null) {
+            List<Organisation> organisations = organisationRepo.findAll();
+            List<Event> events = eventRepo.findAll();
+            User user = volunteer.getUser();
+
+            // Remove volunteer from events
+            events.stream().filter(i->i.getVolunteerList().contains(volunteer)).forEach(event -> event.getVolunteerList().remove(volunteer));
+
+            // Remove volunteer from organisations
+            organisations.stream().filter(i->i.getVolunteers().contains(volunteer)).forEach(organisation -> organisation.getVolunteers().remove(volunteer));
+
+            // Remove volunteer from user
+            user.getVolunteers().remove(volunteer);
+
+            // Save changes
+            eventRepo.saveAll(events);
+            organisationRepo.saveAll(organisations);
+            userRepo.save(user);
+
+            // Delete the volunteer from the repository
+            volunteerRepo.delete(volunteer);
+
+            return "Deleted";
+        }
+        return "Volunteer Doesn't Exist";
+    }
 }

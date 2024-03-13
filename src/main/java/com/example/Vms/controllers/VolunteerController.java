@@ -32,7 +32,7 @@ public class VolunteerController {
     public ResponseEntity<?> totalOrganisations(){
        List<Organisation> organisationList = volunteerService.totalOrganisations();
        if(!(organisationList.isEmpty()))
-       return new ResponseEntity<>(organisationList,HttpStatus.FOUND);
+         return new ResponseEntity<>(organisationList,HttpStatus.FOUND);
        return new ResponseEntity<>("No Organisations Found",HttpStatus.NO_CONTENT);
     }
     @GetMapping("/vieworgbyloc")
@@ -56,5 +56,9 @@ return  new ResponseEntity<>(organisations,HttpStatus.FOUND);
             return new ResponseEntity<>(result,HttpStatus.CREATED);
        return new ResponseEntity<>("No Volunteer Found",HttpStatus.NOT_FOUND);
     }
-
+    @DeleteMapping("/delete")
+    public ResponseEntity<?> deleteVolunteer(int vid){
+       String result = volunteerService.deleteVolunteer(vid);
+       return ResponseEntity.ok(result);
+    }
 }
