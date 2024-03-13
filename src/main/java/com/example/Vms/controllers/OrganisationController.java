@@ -66,4 +66,11 @@ public class OrganisationController {
     String result = organisationService.removeOrganization(oid);
     return ResponseEntity.ok(result);
 }
+@GetMapping("/viewmessages")
+    public ResponseEntity<?> viewMessages(int oid){
+  List<String> messages =  organisationService.viewMessagesOfVolunteers(oid);
+  if(messages!=null)
+      return ResponseEntity.ok(messages);
+  return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+}
 }

@@ -9,10 +9,15 @@ import com.example.Vms.repositories.EventRepo;
 import com.example.Vms.repositories.OrganisationRepo;
 import com.example.Vms.repositories.VolunteerRepo;
 import jakarta.transaction.Transactional;
+import org.apache.logging.log4j.message.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -89,7 +94,7 @@ public class VolunteerService {
         return  "Data Not Found";
    }
    @Transactional
-    public String deleteVolunteer(int vid) {
+    public String leaveOrganisation(int vid) {
         Volunteer volunteer = volunteerRepo.findById(vid).orElse(null);
         if (volunteer != null) {
             List<Organisation> organisations = organisationRepo.findAll();
@@ -117,4 +122,32 @@ public class VolunteerService {
         }
         return "Volunteer Doesn't Exist";
     }
+ public List<Event> viewEventsRegistered(int vid){
+        Volunteer volunteer = volunteerRepo.findById(vid).orElse(null);
+        if(volunteer!=null){
+            return volunteer.getEvents();
+        }
+        return null;
+ }
+ public String sentMessageToOrganisation(int oid,int vid,String message){
+        Organisation organisation = organisationRepo.findById(oid).orElse(null);
+        Volunteer volunteer = volunteerRepo.findById(vid).orElse(null);
+        if(organisation!=null&&volunteer!=null){
+            LocalDateTime currentDateTime = LocalDateTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm yyyy-MM-dd");
+            String formattedDateTime = currentDateTime.format(formatter);
+            String msg = "volunteer id: "+volunteer.getVid()+" volunteer name: "+volunteer.getName()+" :message=>"+message+", time received "+formattedDateTime;
+            List<String> messages = new ArrayList<>();
+            if(organisation.getMessages()==null){
+                organisation.setMessages(messages);
+            }
+            else{
+                messages=organisation.getMessages();
+            }
+            messages.add(msg);
+            organisationRepo.save(organisation);
+            return "Sent";
+        }
+        return "Data Invalid";
+ }
 }

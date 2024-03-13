@@ -37,7 +37,7 @@ public class UserService {
             // Retrieve related entities
             List<Volunteer> volunteers = volunteerRepo.findAll();
             List<Organisation> organisations = organisationRepo.findAll();
-            volunteers.stream().filter(i->i.getUser().equals(user)).map(Volunteer::getVid).forEach(volunteerService::deleteVolunteer);
+            volunteers.stream().filter(i->i.getUser().equals(user)).map(Volunteer::getVid).forEach(volunteerService::leaveOrganisation);
             organisations.stream().filter(i->i.getUsers().contains(user)).forEach(i->i.getUsers().remove(user));
             organisationRepo.saveAll(organisations);
             user.getVolunteers().clear();
@@ -46,5 +46,31 @@ public class UserService {
             return "User Deleted";
         }
         return "User Not Found";
+    }
+    public String updateUser(int uid,User user){
+        User user1 =  userRepo.findById(uid).orElse(null);
+        if(user1!=null) {
+            user1.setName(user.getName());
+            user1.setPassword(passwordEncoder.encode(user.getPassword()));
+            user1.setAddress(user.getAddress());
+            user1.getSkills().addAll(user.getSkills());
+            userRepo.save(user1);
+            List<Volunteer> volunteers = user1.getVolunteers();
+            volunteers.forEach(i->{
+                i.setName(user.getName());
+                i.setAddress(user.getAddress());
+                i.getSkills().addAll(user.getSkills());
+                volunteerRepo.save(i);
+            });
+            return "Updated";
+        }
+        return "User Doesn't Exist";
+    }
+    public List<Organisation> registeredOrganisations(int uid){
+        User user = userRepo.findById(uid).orElse(null);
+        if(user!=null){
+            return user.getOrganisations();
+        }
+        return null;
     }
 }

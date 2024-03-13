@@ -119,7 +119,10 @@ public String sentMessage(int vid, int oid, String message){
            if(organisation.getEvents().contains(event)){
                Set<String> skills = event.getSkills_good_to_have();
                List<Volunteer> volunteers = new ArrayList<>(organisation.getVolunteers());
-               String message = "You Are Very Much Suited For This Event"+" "+event.getName();
+               LocalDateTime currentDateTime = LocalDateTime.now();
+               DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm yyyy-MM-dd");
+               String formattedDateTime = currentDateTime.format(formatter);
+               String message = "You Are Very Much Suited For This Event"+" "+event.getName()+" time received:"+formattedDateTime;
                for (Volunteer volunteer : volunteers) {
                    if(CollectionUtils.containsAny(event.getSkills_good_to_have(),volunteer.getSkills())){
                    volunteer.getMessages().add(message);}
@@ -165,5 +168,52 @@ public String sentMessage(int vid, int oid, String message){
             return "Organisation with ID " + oid + " has been removed.";
         }
         return "Organisation with ID " + oid + " does not exist.";
+    }
+    public String updateOrganisation(Organisation organisation,int oid){
+        Organisation organisation1 = organisationRepo.findById(oid).orElse(null);
+        if(organisation1!=null){
+            organisation1.setName(organisation.getName());
+            organisation1.setAddress(organisation.getAddress());
+            organisation1.setMobile(organisation.getMobile());
+           organisationRepo.save(organisation1);
+           return "Updated";
+        }
+        return "organisation doesn't exist";
+    }
+    @Transactional
+    public String removeVolunteer(int vid) {
+        Volunteer volunteer = volunteerRepo.findById(vid).orElse(null);
+        if (volunteer != null) {
+            List<Organisation> organisations = organisationRepo.findAll();
+            List<Event> events = eventRepo.findAll();
+            User user = volunteer.getUser();
+
+            // Remove volunteer from events
+            events.stream().filter(i->i.getVolunteerList().contains(volunteer)).forEach(event -> event.getVolunteerList().remove(volunteer));
+
+            // Remove volunteer from organisations
+            organisations.stream().filter(i->i.getVolunteers().contains(volunteer)).forEach(organisation -> organisation.getVolunteers().remove(volunteer));
+
+            // Remove volunteer from user
+            user.getVolunteers().remove(volunteer);
+
+            // Save changes
+            eventRepo.saveAll(events);
+            organisationRepo.saveAll(organisations);
+            userRepo.save(user);
+
+            // Delete the volunteer from the repository
+            volunteerRepo.delete(volunteer);
+
+            return "Deleted";
+        }
+        return "Volunteer Doesn't Exist";
+    }
+    public List<String> viewMessagesOfVolunteers(int oid){
+        Organisation organisation = organisationRepo.findById(oid).orElse(null);
+        if(organisation!=null){
+            return organisation.getMessages();
+        }
+        return null;
     }
 }

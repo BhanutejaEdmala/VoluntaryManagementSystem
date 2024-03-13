@@ -58,7 +58,14 @@ return  new ResponseEntity<>(organisations,HttpStatus.FOUND);
     }
     @DeleteMapping("/delete")
     public ResponseEntity<?> deleteVolunteer(int vid){
-       String result = volunteerService.deleteVolunteer(vid);
+       String result = volunteerService.leaveOrganisation(vid);
        return ResponseEntity.ok(result);
+    }
+    @PatchMapping("/sentmessage")
+    public ResponseEntity<?> sentMessage(@RequestParam int oid, @RequestParam int vid,@RequestParam String message){
+       String result = volunteerService.sentMessageToOrganisation(oid,vid,message);
+       if(result!=null)
+           return ResponseEntity.ok(result);
+       return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 }

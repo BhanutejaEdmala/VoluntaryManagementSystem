@@ -7,6 +7,7 @@ import com.example.Vms.models.EventModel;
 import com.example.Vms.repositories.EventRepo;
 import com.example.Vms.repositories.OrganisationRepo;
 import com.example.Vms.repositories.VolunteerRepo;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,5 +39,16 @@ public class EventService {
             return "Deleted";
         }
         return "Event Doesn't Exist";
+    }
+    public Event updateEvent(Event event,int eid){
+        Event event1 = eventRepo.findById(eid).orElse(null);
+        if(event1!=null){
+           event1.setName(event.getName());
+           event1.setDate(event.getDate());
+           event1.setLocation(event.getLocation());
+           event1.getSkills_good_to_have().addAll(event.getSkills_good_to_have());
+           eventRepo.save(event1);
+        }
+        return null;
     }
 }
