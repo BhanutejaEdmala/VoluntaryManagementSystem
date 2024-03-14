@@ -1,5 +1,6 @@
 package com.example.Vms.entities;
 
+import com.example.Vms.validation.MyValid;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
@@ -9,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -23,13 +25,14 @@ public class User {
     private int uid;
     @NotEmpty(message = "name shouldn't be empty")
     private String name;
-    @Size(min = 3,message ="password size should be in between 3 and 8 characters")
+    @Size(min = 3,message ="password size should be greater than 3 characters")
     @NotEmpty(message = "password shouldn't be empty")
     private String password;
     private String roles="user";
     @NotEmpty(message = "address Shouldn't be empty")
     private String address;
-    private Set<String> skills;
+    @MyValid
+    private Set<String> skills = new LinkedHashSet<>();
     @ManyToMany(cascade ={CascadeType.PERSIST,CascadeType.MERGE})
     @JoinTable(name = "user_organisation",
             joinColumns = @JoinColumn(name = "uid"),

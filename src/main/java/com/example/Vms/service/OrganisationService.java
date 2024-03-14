@@ -58,6 +58,8 @@ public String assignEvent(int vid,int eid,int oid){
             Organisation organisation = organisationRepo.findById(oid).get();
             Volunteer volunteer = volunteerRepo.findById(vid).get();
             if(volunteer.getOrganisations().contains(organisation)&&organisation.getEvents().contains(event)){
+                if(event.getStatus().equals("closed"))
+                    return "This Event Is Closed";
                 event.getVolunteerList().add(volunteer);
                 volunteer.getEvents().add(event);
                 volunteerRepo.save(volunteer);
@@ -72,7 +74,7 @@ public List<Event> viewEventsInOrganisation(int oid){
            Organisation organisation = organisationRepo.findById(oid).orElse(null);
            if(organisation.getEvents().size()==0)
                return null;
-           return organisation.getEvents();
+           return organisation.getEvents().stream().filter(i->!(i.getStatus().equals("closed"))).toList();
        }
 return  null;
 }

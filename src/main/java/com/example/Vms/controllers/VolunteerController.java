@@ -1,5 +1,6 @@
 package com.example.Vms.controllers;
 
+import com.example.Vms.entities.Event;
 import com.example.Vms.entities.Organisation;
 import com.example.Vms.entities.User;
 import com.example.Vms.entities.Volunteer;
@@ -67,5 +68,31 @@ return  new ResponseEntity<>(organisations,HttpStatus.FOUND);
        if(result!=null)
            return ResponseEntity.ok(result);
        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+    @GetMapping("/search")
+    public ResponseEntity<?> searchEventsBySkill(@RequestParam int oid,@RequestParam String skill){
+       List<Event> events = volunteerService.searchEventsBySkill(oid,skill);
+       if(!(events.isEmpty()))
+           return new ResponseEntity<>(events,HttpStatus.FOUND);
+       return new ResponseEntity<>("No Events Found",HttpStatus.NOT_FOUND);
+    }
+    @GetMapping("/getorgbyaddress")
+    public ResponseEntity<?> searchOrgByAddress(@RequestParam String address){
+       List<Organisation> organisations = volunteerService.searchOrgByAddress(address);
+       if(organisations!=null)
+           return new ResponseEntity<>(organisations,HttpStatus.FOUND);
+       return new ResponseEntity<>("No Organisation Found",HttpStatus.NOT_FOUND);
+    }
+    @GetMapping("/regevents")
+    public ResponseEntity<?> registeredEvents(@RequestParam int vid){
+       List<Event> events = volunteerService.viewEventsRegistered(vid);
+       if(events!=null)
+           return new ResponseEntity<>(events,HttpStatus.FOUND);
+       return new ResponseEntity<>("You Are Yet To Register In Any Event",HttpStatus.NOT_FOUND);
+    }
+    @PatchMapping("/completeevent")
+    public ResponseEntity<?> completeEvent(@RequestParam int vid,@RequestParam int eid,@RequestParam int oid){
+      String result = volunteerService.CompleteEvent(vid,eid,oid);
+      return new ResponseEntity<>(result,HttpStatus.OK);
     }
 }

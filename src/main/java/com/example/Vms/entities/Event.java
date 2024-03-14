@@ -1,11 +1,14 @@
 package com.example.Vms.entities;
 import com.example.Vms.models.EventModel;
+import com.example.Vms.validation.MyValid;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 @Entity
@@ -17,10 +20,14 @@ public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int eid;
+    @NotEmpty
     private String name;
+    @NotEmpty
     private String location;
+    @NotEmpty
     private String date;
-    private Set<String> skills_good_to_have;
+    @MyValid
+    private Set<String> skills_good_to_have = new LinkedHashSet<>();
     private String status;
     @JsonIgnore
     @ManyToMany(cascade =  { CascadeType.PERSIST, CascadeType.MERGE },fetch = FetchType.EAGER)

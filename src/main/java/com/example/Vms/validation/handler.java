@@ -1,4 +1,4 @@
-package com.example.Vms.exceptions;
+package com.example.Vms.validation;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;

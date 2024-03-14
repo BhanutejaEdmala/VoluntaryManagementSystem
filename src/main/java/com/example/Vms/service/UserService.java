@@ -73,4 +73,22 @@ public class UserService {
         }
         return null;
     }
+    public String leaveOrgaisation(int oid,int uid){
+        Organisation organisation = organisationRepo.findById(oid).orElse(null);
+        User user = userRepo.findById(uid).orElse(null);
+        if(organisation!=null&&user!=null){
+           if(organisation.getUsers().contains(user)){
+               List<Volunteer> volunteers = volunteerRepo.findAll();
+             Volunteer volunteer = volunteers.stream().filter(i->i.getUser().equals(user)&&i.getOrganisations().contains(organisation)).findFirst().orElse(null);
+             volunteerService.leaveOrganisation(volunteer.getVid());
+             organisation.getUsers().remove(user);
+             organisationRepo.save(organisation);
+             user.getOrganisations().remove(organisation);
+             userRepo.save(user);
+             return "Successfully Left";
+           }
+           return "You Haven't Registered In This Organisation";
+        }
+        return "No Data Found";
+    }
 }

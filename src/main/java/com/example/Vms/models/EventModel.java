@@ -2,6 +2,8 @@ package com.example.Vms.models;
 import com.example.Vms.entities.Event;
 import com.example.Vms.entities.Organisation;
 import com.example.Vms.entities.Volunteer;
+import com.example.Vms.validation.MyValid;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,9 +17,13 @@ import java.util.Set;
 @AllArgsConstructor
 public class EventModel {
     private int eid;
+    @NotEmpty(message = "name shouln't be empty")
     private String name;
+    @NotEmpty(message = "location shouldn't be empty")
     private String location;
+    @NotEmpty(message = "date shouldn't be empty")
     private String date;
+    @MyValid
     private Set<String> skills_good_to_have;
     private List<Organisation> organisations;
     private List<Volunteer> volunteerList;
@@ -31,7 +37,6 @@ public class EventModel {
                 ", skills_good_to_have=" + skills_good_to_have +
                 '}';
     }
-
     public EventModel(Event event) {
         this.eid=event.getEid();
         this.name= event.getName();
@@ -41,6 +46,5 @@ public class EventModel {
         this.skills_good_to_have=event.getSkills_good_to_have();
         this.volunteerList=event.getVolunteerList();
     }
-
 }
 

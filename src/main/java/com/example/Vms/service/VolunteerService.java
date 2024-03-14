@@ -62,6 +62,8 @@ public class VolunteerService {
    public List<Volunteer> viewVolunteersInEvent(int eid,int oid){
         if(eventRepo.existsById(eid)&&organisationRepo.existsById(oid)){
             Event event = eventRepo.findById(eid).orElse(null);
+            if(event.getStatus().equals("closed"))
+                return null;
             Organisation organisation = organisationRepo.findById(oid).orElse(null);
             return volunteerRepo.findAll().stream().filter(i->i.getEvents().contains(event)&&i.getOrganisations().contains(organisation)).toList();
         }
@@ -149,5 +151,19 @@ public class VolunteerService {
             return "Sent";
         }
         return "Data Invalid";
+ }
+ public List<Event> searchEventsBySkill(int oid,String skill){
+        Organisation organisation = organisationRepo.findById(oid).orElse(null);
+     List<Event> events = new ArrayList<>();
+        if(organisation.getEvents()!=null){
+             events = organisation.getEvents().stream().filter(i->i.getSkills_good_to_have().contains(skill)).toList();
+            return events;}
+        return null;
+ }
+ public List<Organisation> searchOrgByAddress(String address){
+       List<Organisation> organisations=  organisationRepo.findAll().stream().filter(i->i.getAddress().equals(address)).toList();
+       if(!(organisations.isEmpty()))
+           return organisations;
+       return null;
  }
 }
