@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -20,9 +21,9 @@ import java.util.Set;
         private String name;
         private String address;
         private Set<String> messages = new LinkedHashSet<>();
-        private Set<String> skills;
-        private Set<Organisation> organisations;
-        private List<Event> events;
+        private Set<String> skills = new LinkedHashSet<>();
+        private Set<Organisation> organisations = new LinkedHashSet<>();
+        private List<Event> events = new ArrayList<>();
         public VolunteerModel(Volunteer volunteer){
             this.name=volunteer.getName();
             this.address=volunteer.getAddress();

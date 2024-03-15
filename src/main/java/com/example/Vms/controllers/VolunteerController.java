@@ -71,6 +71,7 @@ return  new ResponseEntity<>(organisations,HttpStatus.FOUND);
     }
     @GetMapping("/search")
     public ResponseEntity<?> searchEventsBySkill(@RequestParam int oid,@RequestParam String skill){
+        System.out.println("hi");
        List<Event> events = volunteerService.searchEventsBySkill(oid,skill);
        if(!(events.isEmpty()))
            return new ResponseEntity<>(events,HttpStatus.FOUND);

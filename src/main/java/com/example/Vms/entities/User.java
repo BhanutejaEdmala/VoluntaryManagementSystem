@@ -1,6 +1,7 @@
 package com.example.Vms.entities;
 
 import com.example.Vms.validation.MyValid;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
@@ -37,8 +38,11 @@ public class User {
     @JoinTable(name = "user_organisation",
             joinColumns = @JoinColumn(name = "uid"),
             inverseJoinColumns = @JoinColumn(name = "oid"))
+    @JsonIgnore
     private List<Organisation> organisations = new ArrayList<>();
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Volunteer> volunteers = new ArrayList<>();
+    @JsonIgnore
     private List<String> certificates = new ArrayList<>();
 }

@@ -44,6 +44,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,"/org/viewmessages").hasAuthority("admin")
                         .requestMatchers(HttpMethod.DELETE,"/org/removevolunteer").hasAuthority("admin")
                         .requestMatchers(HttpMethod.GET,"/org/get").hasAnyAuthority("admin","user")
+                        .requestMatchers(HttpMethod.PATCH,"/org/closeeventfororg").hasAuthority("admin")
                         .requestMatchers(HttpMethod.PATCH,"/vol/add").hasAuthority("user")
                         .requestMatchers(HttpMethod.GET,"/vol/totalorg").hasAuthority("user")
                         .requestMatchers(HttpMethod.GET,"/vol/vieworgbyloc").hasAuthority("user")

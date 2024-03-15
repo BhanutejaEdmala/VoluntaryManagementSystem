@@ -86,6 +86,9 @@ public class OrganisationController {
         return new ResponseEntity<>(organisation,HttpStatus.FOUND);
     return new ResponseEntity<>("No Organisation Found",HttpStatus.NOT_FOUND);
 }
-
-
+@PatchMapping("/closeeventfororg")
+    public ResponseEntity<?> closeEvent(@RequestParam int eid,@RequestParam int oid){
+    String result = organisationService.closeEventForOrg(eid,oid);
+    return new ResponseEntity<>(result,HttpStatus.OK);
+    }
 }

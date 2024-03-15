@@ -11,6 +11,7 @@ import com.example.Vms.repositories.EventRepo;
 import com.example.Vms.repositories.OrganisationRepo;
 import com.example.Vms.repositories.UserRepo;
 import com.example.Vms.repositories.VolunteerRepo;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.transaction.Transactional;
 import org.antlr.v4.runtime.atn.SemanticContext;
 import org.aspectj.weaver.ast.Or;
@@ -32,6 +33,10 @@ public class OrganisationService {
     EventRepo eventRepo;
     @Autowired
     UserRepo userRepo;
+    @Autowired
+    UserService userService;
+    @Autowired
+    VolunteerService volunteerService;
     public OrganisationModel save(Organisation organisation){
         OrganisationModel organisationModel = new OrganisationModel(organisation);
         if(!(organisationRepo.existsById(organisation.getOid()))){
@@ -60,7 +65,7 @@ public String assignEvent(int vid,int eid,int oid){
             Organisation organisation = organisationRepo.findById(oid).get();
             Volunteer volunteer = volunteerRepo.findById(vid).get();
             if(volunteer.getOrganisations().contains(organisation)&&organisation.getEvents().contains(event)){
-                if(!(event.getStatus().equals("active")))
+                if(!(event.getStatus().equals("active"))||organisation.getClosedevents().contains(eid))
                     return "This Event Is Closed";
                 event.getVolunteerList().add(volunteer);
                 volunteer.getEvents().add(event);
@@ -183,6 +188,37 @@ public String sentMessage(int vid, int oid, String message){
            return "Updated";
         }
         return "organisation doesn't exist";
+    }
+    public String closeEventForOrg(int eid,int oid){
+        Event event = eventRepo.findById(eid).orElse(null);
+        Organisation organisation = organisationRepo.findById(oid).orElse(null);
+        List<Integer> events = new ArrayList<>();
+        List<Volunteer> volunteers = event.getVolunteerList();
+        if(event!=null&&organisation!=null) {
+            if(!(organisation.getEvents().contains(event)))
+                return "No Such Event Found In This Organisation";
+            if (organisation.getClosedevents() != null) {
+                events.add(eid);
+
+                organisation.setClosedevents(events);
+            } else {
+                events.add(eid);
+                System.out.println("Hi");
+                organisation.setClosedevents(events);
+            }
+            List<User> users = userRepo.findAll();
+            users.forEach(i->userService.leaveEvent(i.getUid(),eid,oid));
+            organisationRepo.save(organisation);
+            if(!(volunteers.isEmpty())){
+                List<Integer> volunteerIdsToRemove = volunteers.stream()
+                        .map(Volunteer::getVid)
+                        .toList();
+
+                volunteerIdsToRemove.forEach(volunteerService::leaveOrganisation);
+            }
+            return "Event Closed";
+        }
+        return "No Data Found";
     }
     @Transactional
     public String removeVolunteer(int vid) {

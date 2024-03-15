@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -36,10 +37,10 @@ public class Event {
             joinColumns = @JoinColumn(name = "eid"),
             inverseJoinColumns = @JoinColumn(name = "oid")
     )
-    private List<Organisation> organisations;
+    private List<Organisation> organisations = new ArrayList<>();
     @JsonIgnore
     @ManyToMany(mappedBy = "events",cascade = {CascadeType.PERSIST,CascadeType.MERGE},fetch = FetchType.EAGER)
-    private List<Volunteer> volunteerList;
+    private List<Volunteer> volunteerList = new ArrayList<>();
 
     @Override
     public String toString() {

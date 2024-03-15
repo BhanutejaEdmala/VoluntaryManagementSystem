@@ -1,6 +1,8 @@
 package com.example.Vms;
 
+import com.example.Vms.entities.Organisation;
 import com.example.Vms.entities.User;
+import com.example.Vms.repositories.OrganisationRepo;
 import com.example.Vms.repositories.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -16,12 +18,17 @@ import java.util.List;
 public class VmsApplication implements CommandLineRunner {
 @Autowired
 	UserRepo userRepo;
+@Autowired
+	OrganisationRepo repo;
 	public static void main(String[] args) {
 		SpringApplication.run(VmsApplication.class, args);
 	}
 
 	@Override
 	public void run(String... args) throws Exception {
-
+//Organisation organisation = repo.findById(1).orElse(null);
+//		System.out.println(organisation.getClosedevents());
+		List list = new ArrayList();
+		System.out.println(list);
 	}
 }

@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 @Getter
@@ -20,8 +22,8 @@ public class OrganisationModel {
     private String name;
     private String address;
     private String mobile;
-    private Set<Volunteer> volunteers;
-    private List<Event> events;
+    private Set<Volunteer> volunteers = new LinkedHashSet<>();
+    private List<Event> events = new ArrayList<>();
     public OrganisationModel(Organisation organisation){
         this.oid=organisation.getOid();
         this.name=organisation.getName();

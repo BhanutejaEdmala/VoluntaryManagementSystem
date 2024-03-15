@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 @Setter
@@ -24,9 +26,9 @@ public class EventModel {
     @NotEmpty(message = "date shouldn't be empty")
     private String date;
     @MyValid
-    private Set<String> skills_good_to_have;
-    private List<Organisation> organisations;
-    private List<Volunteer> volunteerList;
+    private Set<String> skills_good_to_have = new LinkedHashSet<>();
+    private List<Organisation> organisations = new ArrayList<>();
+    private List<Volunteer> volunteerList = new ArrayList<>();
     @Override
     public String toString() {
         return "EventModel{" +
