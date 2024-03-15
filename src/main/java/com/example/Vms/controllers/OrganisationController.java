@@ -75,6 +75,11 @@ public class OrganisationController {
       return ResponseEntity.ok(messages);
   return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 }
+@PatchMapping("/closeevent")
+public ResponseEntity<?> closeevent(@RequestParam int eid){
+    String result= organisationService.closeEvent(eid);
+    return new ResponseEntity<>(result,HttpStatus.OK);
+}
 @DeleteMapping("/removevolunteer")
     public ResponseEntity<?> removeVolunteer(@RequestParam int vid){
     String result = organisationService.removeVolunteer(vid);

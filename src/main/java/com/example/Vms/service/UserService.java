@@ -116,7 +116,7 @@ public class UserService  implements UserServiceInterface{
         if(user!=null&&event!=null&&organisation!=null){
             List<Volunteer> volunteers = volunteerRepo.findAll();
            Volunteer volunteer= volunteers.stream().filter(i->i.getUser().equals(user)&&i.getOrganisations().contains(organisation)).findFirst().orElse(null);
-           if(volunteer!=null&&!(volunteer.getEvents().contains(event))) {
+           if(volunteer!=null&&volunteer.getEvents().contains(event)) {
                volunteer.getEvents().remove(event);
                event.getVolunteerList().remove(volunteer);
                eventRepo.save(event);

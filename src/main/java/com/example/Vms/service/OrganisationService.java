@@ -192,29 +192,29 @@ public String sendMessage(int vid, int oid, String message){
     public String closeEventForOrg(int eid,int oid){
         Event event = eventRepo.findById(eid).orElse(null);
         Organisation organisation = organisationRepo.findById(oid).orElse(null);
-        List<Integer> events = new ArrayList<>();
-        List<Volunteer> volunteers = event.getVolunteerList();
+        List<Integer> events = new ArrayList<>();;
         if(event!=null&&organisation!=null) {
+            List<Volunteer> volunteers = event.getVolunteerList();
             if(!(organisation.getEvents().contains(event)))
                 return "No Such Event Found In This Organisation";
             if (organisation.getClosedevents() != null) {
                 events.add(eid);
-
                 organisation.setClosedevents(events);
             } else {
                 events.add(eid);
                 System.out.println("Hi");
                 organisation.setClosedevents(events);
             }
-            List<User> users = userRepo.findAll();
-            users.forEach(i->userService.leaveEvent(i.getUid(),eid,oid));
-            organisationRepo.save(organisation);
             if(!(volunteers.isEmpty())){
-                List<Integer> volunteerIdsToRemove = volunteers.stream()
-                        .map(Volunteer::getVid)
-                        .toList();
-
-                volunteerIdsToRemove.forEach(volunteerService::leaveOrganisation);
+                List<Volunteer> volunteersToRemove = new ArrayList<>(volunteers);
+                for (Volunteer volunteer : volunteersToRemove) {
+                    int uid = volunteer.getUser().getUid();
+                    try{
+                    userService.leaveEvent(uid, eid, oid);}
+                    catch(Exception e){
+                    System.out.println("");}
+                }
+                organisationRepo.save(organisation);
             }
             return "Event Closed";
         }
@@ -261,5 +261,14 @@ public String sendMessage(int vid, int oid, String message){
         if(organisation!=null)
             return organisation;
         return null;
+    }
+    public String closeEvent(int eid){
+        Event event = eventRepo.findById(eid).orElse(null);
+        if(event!=null){
+            event.setStatus("closed");
+            eventRepo.save(event);
+            return "Event Closed";
+        }
+        return "event doesn't exist";
     }
 }

@@ -30,7 +30,7 @@ public class EventController {
         return ResponseEntity.ok(result);
     }
     @PatchMapping("/update")
-    public ResponseEntity<?> updateEvent(@RequestBody Event event,@RequestParam int eid){
+    public ResponseEntity<?> updateEvent(@RequestBody  Event event,@RequestParam int eid){
         Event event1 = eventService.updateEvent(event,eid);
         return ResponseEntity.ok(event1);
     }
