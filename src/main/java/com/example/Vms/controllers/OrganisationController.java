@@ -5,6 +5,7 @@ import com.example.Vms.entities.Organisation;
 import com.example.Vms.models.EventModel;
 import com.example.Vms.models.OrganisationModel;
 import com.example.Vms.service.OrganisationService;
+import jakarta.validation.Valid;
 import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,7 +20,7 @@ public class OrganisationController {
     @Autowired
     OrganisationService organisationService;
 @PostMapping("/save")
-    public ResponseEntity<?> add(@RequestBody Organisation organisation){
+    public ResponseEntity<?> add(@RequestBody @Valid Organisation organisation){
     OrganisationModel organisationModel=organisationService.save(organisation);
     System.out.println("hi");
          return new ResponseEntity<>("Organisation Saved", HttpStatus.CREATED);

@@ -1,6 +1,7 @@
 package com.example.Vms.entities;
 
 import com.example.Vms.models.OrganisationModel;
+import com.example.Vms.validation.MValid;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -30,6 +31,8 @@ public class Organisation {
     private String address;
     @NotEmpty
     @Pattern(regexp="\\d{10}", message="Mobile number must be 10 digits")
+    @MValid
+    @Column(unique = true)
     private String mobile;
     @ManyToMany(mappedBy = "organisations",cascade =  { CascadeType.PERSIST, CascadeType.MERGE,CascadeType.REMOVE},fetch = FetchType.EAGER)
     @JsonIgnore
