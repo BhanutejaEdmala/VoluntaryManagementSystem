@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD,ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface MyValid {
-    public String message() default " skills shouldn't be empty and they  shouldn't consist of numbers";
+    public String message() default " skills shouldn't be empty and they shouldn't consist of numbers";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

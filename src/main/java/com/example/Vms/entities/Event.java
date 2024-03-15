@@ -28,7 +28,7 @@ public class Event {
     private String date;
     @MyValid
     private Set<String> skills_good_to_have = new LinkedHashSet<>();
-    private String status;
+    private String status="active";
     @JsonIgnore
     @ManyToMany(cascade =  { CascadeType.PERSIST, CascadeType.MERGE },fetch = FetchType.EAGER)
     @JoinTable(

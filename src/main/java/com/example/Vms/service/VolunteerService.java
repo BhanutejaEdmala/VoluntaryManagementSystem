@@ -77,17 +77,22 @@ public class VolunteerService {
    }
    public String CompleteEvent(int vid,int eid,int oid){
         Event event = eventRepo.findById(eid).orElse(null);
-        Organisation organisation = organisationRepo.findById(eid).orElse(null);
+        Organisation organisation = organisationRepo.findById(oid).orElse(null);
         Volunteer volunteer = volunteerRepo.findById(vid).orElse(null);
         if(event!=null&&organisation!=null){
                List<Event> events = organisation.getEvents();
                if(events.contains(event)){
+                   if(!(volunteer.getEvents().contains(event)))
+                       return "event is not assigned to this volunteer";
                    if(volunteer!=null){
                       User user = volunteer.getUser();
                       List<String> certificates = user.getCertificates();
                       certificates.add(user.getName()+"  has participated in the event "+event.getName()+" held in our organisation "+organisation.getName());
+                      volunteer.getEvents().remove(event);
+                      volunteerRepo.save(volunteer);
                       user.setCertificates(certificates);
                       userRepo.save(user);
+                      return "Done";
                     }
                    return "Volunteer Doesn't Exist";
                }
@@ -127,11 +132,11 @@ public class VolunteerService {
  public List<Event> viewEventsRegistered(int vid){
         Volunteer volunteer = volunteerRepo.findById(vid).orElse(null);
         if(volunteer!=null){
-            return volunteer.getEvents();
+            return volunteer.getEvents().stream().filter(i->i.getStatus().equals("active")).distinct().toList();
         }
         return null;
  }
- public String sentMessageToOrganisation(int oid,int vid,String message){
+ public String sendMessageToOrganisation(int oid,int vid,String message){
         Organisation organisation = organisationRepo.findById(oid).orElse(null);
         Volunteer volunteer = volunteerRepo.findById(vid).orElse(null);
         if(organisation!=null&&volunteer!=null){
@@ -165,5 +170,11 @@ public class VolunteerService {
        if(!(organisations.isEmpty()))
            return organisations;
        return null;
+ }
+ public Volunteer get(int vid){
+        Volunteer volunteer = volunteerRepo.findById(vid).orElse(null);
+        if(volunteer!=null)
+            return volunteer;
+        return null;
  }
 }

@@ -5,6 +5,7 @@ import com.example.Vms.entities.Organisation;
 import com.example.Vms.models.EventModel;
 import com.example.Vms.models.OrganisationModel;
 import com.example.Vms.service.OrganisationService;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +29,7 @@ public class OrganisationController {
     EventModel eventModel = organisationService.addEvent(oid,eid);
     if(eventModel!=null)
         return new ResponseEntity<>(eventModel,HttpStatus.CREATED);
-    return new ResponseEntity<>("No Organisation Exist With Given Id",HttpStatus.NOT_FOUND);
+    return new ResponseEntity<>("No Data Found",HttpStatus.NOT_FOUND);
 }
 @PatchMapping("/assignevent")
     public ResponseEntity<?> assignEvent(@RequestParam int vid,@RequestParam int eid,@RequestParam int oid){
@@ -77,6 +78,13 @@ public class OrganisationController {
     public ResponseEntity<?> removeVolunteer(@RequestParam int vid){
     String result = organisationService.removeVolunteer(vid);
      return new ResponseEntity<>(result,HttpStatus.OK);
+}
+@GetMapping("/get")
+    public ResponseEntity<?> get(@RequestParam int oid){
+    Organisation organisation = organisationService.get(oid);
+    if(organisation!=null)
+        return new ResponseEntity<>(organisation,HttpStatus.FOUND);
+    return new ResponseEntity<>("No Organisation Found",HttpStatus.NOT_FOUND);
 }
 
 

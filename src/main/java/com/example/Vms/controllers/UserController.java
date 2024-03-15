@@ -41,4 +41,21 @@ public class UserController {
         String result = userService.leaveOrgaisation(oid,uid);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
+    @GetMapping("/viewcertificates")
+    public ResponseEntity<?> viewCertificates(@RequestParam int uid) {
+        if (userService.viewCertifications(uid) != null)
+            return new ResponseEntity<>(userService.viewCertifications(uid), HttpStatus.FOUND);
+        return new ResponseEntity<>("No Data Found", HttpStatus.NOT_FOUND);
+    }
+    @GetMapping("/get")
+    public ResponseEntity<?> getUser(@RequestParam int uid){
+        User user = userService.getUser(uid);
+        if(user!=null)
+            return new ResponseEntity<>(user,HttpStatus.FOUND);
+        return new ResponseEntity<>("No User Found",HttpStatus.NOT_FOUND);
+    }
+    @PatchMapping("/leaveevent")
+    public ResponseEntity<?> leaveEvent(@RequestParam int uid,@RequestParam int eid,@RequestParam int oid){
+        return new ResponseEntity<>(userService.leaveEvent(uid,eid,oid),HttpStatus.FOUND);
+    }
 }

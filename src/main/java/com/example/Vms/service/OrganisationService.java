@@ -13,6 +13,7 @@ import com.example.Vms.repositories.UserRepo;
 import com.example.Vms.repositories.VolunteerRepo;
 import jakarta.transaction.Transactional;
 import org.antlr.v4.runtime.atn.SemanticContext;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 
@@ -43,6 +44,7 @@ public class OrganisationService {
         Organisation organisation = organisationRepo.findById(oid).get();
         Event event = eventRepo.findById(eid).get();
         if(!(organisation.getEvents().contains(event))){
+            System.out.println("hi");
             event.getOrganisations().add(organisation);
             organisation.getEvents().add(event);
             organisationRepo.save(organisation);
@@ -58,7 +60,7 @@ public String assignEvent(int vid,int eid,int oid){
             Organisation organisation = organisationRepo.findById(oid).get();
             Volunteer volunteer = volunteerRepo.findById(vid).get();
             if(volunteer.getOrganisations().contains(organisation)&&organisation.getEvents().contains(event)){
-                if(event.getStatus().equals("closed"))
+                if(!(event.getStatus().equals("active")))
                     return "This Event Is Closed";
                 event.getVolunteerList().add(volunteer);
                 volunteer.getEvents().add(event);
@@ -216,6 +218,12 @@ public String sentMessage(int vid, int oid, String message){
         if(organisation!=null){
             return organisation.getMessages();
         }
+        return null;
+    }
+    public Organisation get(int oid){
+        Organisation organisation = organisationRepo.findById(oid).orElse(null);
+        if(organisation!=null)
+            return organisation;
         return null;
     }
 }

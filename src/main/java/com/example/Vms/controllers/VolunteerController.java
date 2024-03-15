@@ -64,7 +64,7 @@ return  new ResponseEntity<>(organisations,HttpStatus.FOUND);
     }
     @PatchMapping("/sentmessage")
     public ResponseEntity<?> sentMessage(@RequestParam int oid, @RequestParam int vid,@RequestParam String message){
-       String result = volunteerService.sentMessageToOrganisation(oid,vid,message);
+       String result = volunteerService.sendMessageToOrganisation(oid,vid,message);
        if(result!=null)
            return ResponseEntity.ok(result);
        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -94,5 +94,12 @@ return  new ResponseEntity<>(organisations,HttpStatus.FOUND);
     public ResponseEntity<?> completeEvent(@RequestParam int vid,@RequestParam int eid,@RequestParam int oid){
       String result = volunteerService.CompleteEvent(vid,eid,oid);
       return new ResponseEntity<>(result,HttpStatus.OK);
+    }
+    @GetMapping("/get")
+    public ResponseEntity<?> get(@RequestParam int vid){
+        Volunteer volunteer = volunteerService.get(vid);
+        if(volunteer!=null)
+            return new ResponseEntity<>(volunteer,HttpStatus.FOUND);
+        return new ResponseEntity<>("No Volunteer Found",HttpStatus.NOT_FOUND);
     }
 }

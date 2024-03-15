@@ -1,5 +1,6 @@
 package com.example.Vms.validation;
 
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -19,4 +20,15 @@ public class handler {
                 errors.put(error.getField(), error.getDefaultMessage()));
         return errors;
     }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(ConstraintViolationException.class)
+    public Map<String, String> constraintViolationException(ConstraintViolationException exception) {
+        Map<String, String> errors = new HashMap<>();
+        exception.getConstraintViolations().forEach(i -> errors.put(i.getPropertyPath().toString(), i.getMessage()));
+        return errors;
+    }
 }
+
+
+

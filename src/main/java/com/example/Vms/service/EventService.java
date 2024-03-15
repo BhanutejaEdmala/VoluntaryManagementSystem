@@ -51,4 +51,10 @@ public class EventService {
         }
         return null;
     }
+    public Event get(int eid){
+        Event event = eventRepo.findById(eid).orElse(null);
+        if(event!=null)
+            return event;
+        return null;
+    }
 }
