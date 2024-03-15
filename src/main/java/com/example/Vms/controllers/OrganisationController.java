@@ -46,9 +46,9 @@ public class OrganisationController {
         return new ResponseEntity<>(eventList,HttpStatus.FOUND);
     return new ResponseEntity<>("No Data Found",HttpStatus.NOT_FOUND);
 }
-@PatchMapping("/sentmessage")
-    public ResponseEntity<?> sentMessage(@RequestParam int vid,@RequestParam int oid,@RequestParam String message){
-    String result = organisationService.sentMessage(vid,oid,message);
+@PatchMapping("/sendmessage")
+    public ResponseEntity<?> sendMessage(@RequestParam int vid,@RequestParam int oid,@RequestParam String message){
+    String result = organisationService.sendMessage(vid,oid,message);
      if(result!=null)
          return new ResponseEntity<>(result,HttpStatus.ACCEPTED);
      return new ResponseEntity<>("No Data Found",HttpStatus.NOT_FOUND);
@@ -56,7 +56,7 @@ public class OrganisationController {
 @PatchMapping("/groupmessage")
     public ResponseEntity<?> groupMessage(@RequestParam  int oid,@RequestParam String message){
    String result= organisationService.groupMessage(oid,message);
-    return ResponseEntity.ok(null);
+    return ResponseEntity.ok(result);
 }
 @PatchMapping("/suggest")
     public ResponseEntity<?> suggestVolunteers(@RequestParam int eid,@RequestParam int oid){

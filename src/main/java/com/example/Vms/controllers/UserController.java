@@ -44,7 +44,7 @@ public class UserController {
     @GetMapping("/viewcertificates")
     public ResponseEntity<?> viewCertificates(@RequestParam int uid) {
         if (userService.viewCertifications(uid) != null)
-            return new ResponseEntity<>(userService.viewCertifications(uid), HttpStatus.FOUND);
+            return new ResponseEntity<>(userService.viewCertifications(uid).toString(), HttpStatus.FOUND);
         return new ResponseEntity<>("No Data Found", HttpStatus.NOT_FOUND);
     }
     @GetMapping("/get")

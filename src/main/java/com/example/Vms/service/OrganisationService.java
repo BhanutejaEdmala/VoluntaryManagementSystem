@@ -24,7 +24,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @org.springframework.stereotype.Service
-public class OrganisationService {
+public class OrganisationService implements OrganisationServiceInterface {
     @Autowired
     OrganisationRepo organisationRepo;
     @Autowired
@@ -85,7 +85,7 @@ public List<Event> viewEventsInOrganisation(int oid){
        }
 return  null;
 }
-public String sentMessage(int vid, int oid, String message){
+public String sendMessage(int vid, int oid, String message){
         if(volunteerRepo.existsById(vid)&&organisationRepo.existsById(oid)){
             Volunteer volunteer = volunteerRepo.findById(vid).orElse(null);
             Organisation organisation = organisationRepo.findById(oid).orElse(null);
@@ -131,7 +131,7 @@ public String sentMessage(int vid, int oid, String message){
                LocalDateTime currentDateTime = LocalDateTime.now();
                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm yyyy-MM-dd");
                String formattedDateTime = currentDateTime.format(formatter);
-               String message = "You Are Very Much Suited For This Event"+" "+event.getName()+" time received:"+formattedDateTime;
+               String message = "You Are Very Much Suited For This Event"+" '"+event.getName()+"', time received:"+formattedDateTime;
                for (Volunteer volunteer : volunteers) {
                    if(CollectionUtils.containsAny(event.getSkills_good_to_have(),volunteer.getSkills())){
                    volunteer.getMessages().add(message);}

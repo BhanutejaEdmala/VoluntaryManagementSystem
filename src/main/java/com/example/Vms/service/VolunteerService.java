@@ -22,7 +22,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class VolunteerService {
+public class VolunteerService implements VolunteerServiceInterface {
     @Autowired
     VolunteerRepo volunteerRepo;
     @Autowired

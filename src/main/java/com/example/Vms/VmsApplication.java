@@ -26,8 +26,8 @@ public class VmsApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-//Organisation organisation = repo.findById(1).orElse(null);
-//		System.out.println(organisation.getClosedevents());
+	//Organisation organisation = repo.findById(1).orElse(null);
+	//		System.out.println(organisation.getClosedevents());
 		List list = new ArrayList();
 		System.out.println(list);
 	}

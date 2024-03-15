@@ -62,8 +62,8 @@ return  new ResponseEntity<>(organisations,HttpStatus.FOUND);
        String result = volunteerService.leaveOrganisation(vid);
        return ResponseEntity.ok(result);
     }
-    @PatchMapping("/sentmessage")
-    public ResponseEntity<?> sentMessage(@RequestParam int oid, @RequestParam int vid,@RequestParam String message){
+    @PatchMapping("/sendmessage")
+    public ResponseEntity<?> sendMessage(@RequestParam int oid, @RequestParam int vid,@RequestParam String message){
        String result = volunteerService.sendMessageToOrganisation(oid,vid,message);
        if(result!=null)
            return ResponseEntity.ok(result);

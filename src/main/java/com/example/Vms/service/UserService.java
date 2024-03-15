@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class UserService {
+public class UserService  implements UserServiceInterface{
     @Autowired
     UserRepo userRepo;
     @Autowired
@@ -103,7 +103,7 @@ public class UserService {
         User user = userRepo.findById(uid).orElse(null);
         if (user != null) {
             List<String> certificates = user.getCertificates();
-            if (certificates != null)
+            if (!(certificates .isEmpty()))
                 return certificates;
             return "You Are Yet To Receive A Certificate";
         }
