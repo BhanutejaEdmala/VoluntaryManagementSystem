@@ -33,7 +33,7 @@ public class Volunteer {
     @JsonIgnore
    // @JsonBackReference
     private Set<Organisation> organisations = new LinkedHashSet<>();
-    @ManyToMany(cascade =  { CascadeType.PERSIST, CascadeType.MERGE,CascadeType.REMOVE },fetch = FetchType.EAGER)
+    @ManyToMany(cascade =  { CascadeType.PERSIST, CascadeType.MERGE },fetch = FetchType.EAGER)
     @JoinTable(
             name = "event_volunteer",
             joinColumns = @JoinColumn(name = "vid"),

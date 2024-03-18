@@ -34,7 +34,7 @@ public class Organisation {
     @MValid
     @Column(unique = true)
     private String mobile;
-    @ManyToMany(mappedBy = "organisations",cascade =  { CascadeType.PERSIST, CascadeType.MERGE,CascadeType.REMOVE},fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "organisations",cascade =  CascadeType.ALL,fetch = FetchType.EAGER)
     @JsonIgnore
     private Set<Volunteer> volunteers;
     @ManyToMany(mappedBy = "organisations",cascade =  { CascadeType.PERSIST, CascadeType.MERGE},fetch = FetchType.EAGER)

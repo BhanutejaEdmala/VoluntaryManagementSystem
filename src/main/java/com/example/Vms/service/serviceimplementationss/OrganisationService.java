@@ -162,11 +162,7 @@ public String sendMessage(int volunteerId, int organisationId, String message){
             List<Volunteer> volunteers = new ArrayList<>(organisation.getVolunteers());
             List<Event> events = organisation.getEvents();
             // Remove the organization from related volunteers
-            volunteers.stream().filter(i -> i.getOrganisations().contains(organisation))
-                    .forEach(volunteer -> {
-                        volunteer.getOrganisations().remove(organisation);
-                        volunteerRepo.delete(volunteer);
-                    });
+            volunteers.forEach(volunteer -> removeVolunteer(volunteer.getVid()));
             // Remove the organization from related events
             events.stream().filter(i->i.getOrganisations().contains(organisation)).forEach(event -> event.getOrganisations().remove(organisation));
             // Clear organization references from related entities
@@ -187,7 +183,7 @@ public String sendMessage(int volunteerId, int organisationId, String message){
         Organisation organisation1 = organisationRepo.findById(organisationId).orElse(null);
         if(organisation1!=null){
             organisation1.setName(organisation.getName());
-            organisation1.setAddress(organisation.getAddress());
+             organisation1.setAddress(organisation.getAddress());
             organisation1.setMobile(organisation.getMobile());
            organisationRepo.save(organisation1);
            return "Updated";

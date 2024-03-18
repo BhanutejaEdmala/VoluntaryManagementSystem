@@ -104,4 +104,12 @@ return  new ResponseEntity<>(organisations,HttpStatus.FOUND);
             return new ResponseEntity<>(volunteer,HttpStatus.FOUND);
         return new ResponseEntity<>("No Volunteer Found",HttpStatus.NOT_FOUND);
     }
+    @GetMapping("/eventsregisteredinorganisation")
+    public ResponseEntity<?> eventsInAParticulatOrg(@RequestParam int volunteerId,@RequestParam int organisationId){
+       List<EventModel> eventModels = volunteerService.eventsRegisteredByVolInOrg(volunteerId,organisationId);
+       if(eventModels!=null){
+           return  new ResponseEntity<>(eventModels,HttpStatus.OK);
+       }
+       return new ResponseEntity<>("Check The Details You've Entered",HttpStatus.NOT_FOUND);
+    }
 }

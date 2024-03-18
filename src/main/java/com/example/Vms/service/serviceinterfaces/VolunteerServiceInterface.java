@@ -34,4 +34,5 @@ public interface VolunteerServiceInterface {
     List<OrganisationModel> searchOrgByAddress(String address);
 
     VolunteerModel get(int vid);
+    public List<EventModel> eventsRegisteredByVolInOrg(int volunteerId,int organisationId);
 }

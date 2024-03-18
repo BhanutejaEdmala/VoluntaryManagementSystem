@@ -29,7 +29,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeRequests(authorizeRequests ->
                 authorizeRequests
-                        .requestMatchers(HttpMethod.POST,"/event/saveevent").hasAnyAuthority("user","admin")
+                        .requestMatchers(HttpMethod.POST,"/event/saveevent").permitAll()
                         .requestMatchers(HttpMethod.DELETE,"/event/deleteevent").hasAuthority("admin")
                         .requestMatchers(HttpMethod.PATCH,"/event/updatevent").hasAuthority("admin")
                         .requestMatchers(HttpMethod.GET,"/event/getevent").hasAnyAuthority("admin","user")

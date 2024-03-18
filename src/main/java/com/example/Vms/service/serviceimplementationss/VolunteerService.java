@@ -1,7 +1,6 @@
 package com.example.Vms.service.serviceimplementationss;
 
 import com.example.Vms.conversions.EntityToModel;
-import com.example.Vms.conversions.ModelToEntity;
 import com.example.Vms.entities.Event;
 import com.example.Vms.entities.Organisation;
 import com.example.Vms.entities.User;
@@ -15,9 +14,9 @@ import com.example.Vms.repositories.OrganisationRepo;
 import com.example.Vms.repositories.VolunteerRepo;
 import com.example.Vms.service.serviceinterfaces.VolunteerServiceInterface;
 import jakarta.transaction.Transactional;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -185,5 +184,13 @@ public class VolunteerService implements VolunteerServiceInterface {
         if(volunteer!=null)
             return entityToModel.volunteerToVolunteerModel(volunteer);
         return null;
+ }
+ public List<EventModel> eventsRegisteredByVolInOrg(int volunteerId,int organisationId){
+        Volunteer volunteer = volunteerRepo.findById(volunteerId).orElse(null);
+     Organisation organisation = organisationRepo.findById(organisationId).orElse(null);
+     if(volunteer!=null&&organisation!=null){
+         return volunteerRepo.findEventsByVolunteerAndOrganisation(volunteerId,organisationId).stream().map(entityToModel::eventToEventModel).toList();
+     }
+     return null;
  }
 }
