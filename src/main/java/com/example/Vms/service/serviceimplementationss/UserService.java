@@ -1,23 +1,26 @@
-package com.example.Vms.service;
+package com.example.Vms.service.serviceimplementationss;
 
+import com.example.Vms.conversions.EntityToModel;
+import com.example.Vms.conversions.ModelToEntity;
 import com.example.Vms.entities.Event;
 import com.example.Vms.entities.Organisation;
 import com.example.Vms.entities.User;
 import com.example.Vms.entities.Volunteer;
+import com.example.Vms.models.OrganisationModel;
+import com.example.Vms.models.UserModel;
 import com.example.Vms.repositories.EventRepo;
 import com.example.Vms.repositories.OrganisationRepo;
 import com.example.Vms.repositories.UserRepo;
 import com.example.Vms.repositories.VolunteerRepo;
-import org.aspectj.weaver.ast.Or;
+import com.example.Vms.service.serviceinterfaces.UserServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class UserService  implements UserServiceInterface{
+public class UserService  implements UserServiceInterface {
     @Autowired
     UserRepo userRepo;
     @Autowired
@@ -30,9 +33,15 @@ public class UserService  implements UserServiceInterface{
     private PasswordEncoder passwordEncoder;
 @Autowired
     EventRepo eventRepo;
-    public User save(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepo.save(user);
+@Autowired
+ModelToEntity modelToEntity;
+@Autowired
+EntityToModel entityToModel;
+
+    public User save(UserModel user) {
+       User user1= modelToEntity.userModelToEntity(user);
+        user1.setPassword(passwordEncoder.encode(user.getPassword()));
+        return userRepo.save(user1);
     }
 
     public String deleteUser(int uid) {
@@ -72,10 +81,10 @@ public class UserService  implements UserServiceInterface{
         return "User Doesn't Exist";
     }
 
-    public List<Organisation> registeredOrganisations(int uid) {
+    public List<OrganisationModel> registeredOrganisations(int uid) {
         User user = userRepo.findById(uid).orElse(null);
         if (user != null) {
-            return user.getOrganisations();
+            return user.getOrganisations().stream().map(entityToModel::organisationToOrganisationModel).toList();
         }
         return null;
     }
@@ -123,14 +132,15 @@ public class UserService  implements UserServiceInterface{
                volunteerRepo.save(volunteer);
                return "You Left The Event";
            }
-           return "Check Wheather You Registered In This Organisation Or In This Event";
+           return "Check Whether You Registered In This Organisation Or In This Event";
         }
-        return "Data Not Found";
+        return "Make Sure To Enter Correct Details";
     }
-    public User getUser(int uid){
+    public UserModel getUser(int uid){
       User user = userRepo.findById(uid).orElse(null);
-      if(user!=null)
-          return user;
+      if(user!=null){
+      UserModel userModel = entityToModel.userEntityToModel(user);
+        return userModel;}
       return null;
     }
 }

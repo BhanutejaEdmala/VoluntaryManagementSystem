@@ -1,6 +1,7 @@
 package com.example.Vms.entities;
 import com.example.Vms.models.EventModel;
 import com.example.Vms.validation.MyValid;
+import com.example.Vms.validation.Timings;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -30,6 +31,8 @@ public class Event {
     @MyValid
     private Set<String> skills_good_to_have = new LinkedHashSet<>();
     private String status="active";
+    @Timings
+    private String timings;
     @JsonIgnore
     @ManyToMany(cascade =  { CascadeType.PERSIST, CascadeType.MERGE },fetch = FetchType.EAGER)
     @JoinTable(
@@ -52,13 +55,5 @@ public class Event {
                 ", skills_good_to_have=" + skills_good_to_have +
                 '}';
     }
-    public Event(EventModel event) {
-        this.eid=event.getEid();
-        this.name= event.getName();
-        this.location=event.getLocation();
-        this.date=event.getDate();
-        this.organisations=event.getOrganisations();
-        this.skills_good_to_have=event.getSkills_good_to_have();
-        this.volunteerList=event.getVolunteerList();
-    }
+
 }

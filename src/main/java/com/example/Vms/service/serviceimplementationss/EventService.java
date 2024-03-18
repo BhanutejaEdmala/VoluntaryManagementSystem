@@ -1,5 +1,7 @@
-package com.example.Vms.service;
+package com.example.Vms.service.serviceimplementationss;
 
+import com.example.Vms.conversions.EntityToModel;
+import com.example.Vms.conversions.ModelToEntity;
 import com.example.Vms.entities.Event;
 import com.example.Vms.entities.Organisation;
 import com.example.Vms.entities.Volunteer;
@@ -7,7 +9,7 @@ import com.example.Vms.models.EventModel;
 import com.example.Vms.repositories.EventRepo;
 import com.example.Vms.repositories.OrganisationRepo;
 import com.example.Vms.repositories.VolunteerRepo;
-import org.springframework.beans.BeanUtils;
+import com.example.Vms.service.serviceinterfaces.EventServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,10 +23,14 @@ public class EventService implements EventServiceInterface {
     OrganisationRepo organisationRepo;
     @Autowired
     VolunteerRepo volunteerRepo;
-    public Event save(EventModel eventModel){
-        Event event = new Event(eventModel);
-        System.out.println(event);
-        return eventRepo.save(event);
+    @Autowired
+    ModelToEntity modelToEntity;
+    @Autowired
+    EntityToModel entityToModel;
+    public EventModel save(EventModel eventModel){
+       Event event = modelToEntity.EventModelToEvent(eventModel);
+       eventRepo.save(event);
+        return eventModel;
     }
     public String deleteEvent(int eid){
         Event event = eventRepo.findById(eid).orElse(null);
@@ -40,21 +46,24 @@ public class EventService implements EventServiceInterface {
         }
         return "Event Doesn't Exist";
     }
-    public Event updateEvent(Event event,int eid){
+    public String updateEvent(Event event,int eid){
         Event event1 = eventRepo.findById(eid).orElse(null);
+        if(event1!=null&&!(event1.getVolunteerList().isEmpty()))
+             return "This Event Is Already Assigned To Few Volunteers , Updating It Might Leads To Confusion";
         if(event1!=null){
            event1.setName(event.getName());
            event1.setDate(event.getDate());
            event1.setLocation(event.getLocation());
+           event1.setTimings(event.getTimings());
+           event1.setStatus(event.getStatus());
            event1.getSkills_good_to_have().addAll(event.getSkills_good_to_have());
            eventRepo.save(event1);
+           return "updated";
         }
         return null;
     }
-    public Event get(int eid){
+    public EventModel get(int eid){
         Event event = eventRepo.findById(eid).orElse(null);
-        if(event!=null)
-            return event;
-        return null;
+        return event!=null ?entityToModel.eventToEventModel(event):null;
     }
 }

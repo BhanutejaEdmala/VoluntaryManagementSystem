@@ -1,6 +1,5 @@
 package com.example.Vms.models;
 
-import com.example.Vms.entities.Event;
 import com.example.Vms.entities.Organisation;
 import com.example.Vms.entities.Volunteer;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -8,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -18,13 +16,16 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrganisationModel {
+public class UserModel {
     private String name;
+    private String password;
+    private String roles="user";
     private String address;
-    private String mobile;
+    private Set<String> skills=  new LinkedHashSet<>();
     @JsonIgnore
-    private Set<Volunteer> volunteers = new LinkedHashSet<>();
+    private List<Organisation> organisations=new ArrayList<>();
     @JsonIgnore
-    private List<Event> events = new ArrayList<>();
-
+    private List<Volunteer> volunteers = new ArrayList<>();
+    @JsonIgnore
+    private List<String> certificates = new ArrayList<>();
 }

@@ -1,15 +1,20 @@
-package com.example.Vms.service;
+package com.example.Vms.service.serviceimplementationss;
 
+import com.example.Vms.conversions.EntityToModel;
+import com.example.Vms.conversions.ModelToEntity;
 import com.example.Vms.entities.Event;
 import com.example.Vms.entities.Organisation;
 import com.example.Vms.entities.User;
 import com.example.Vms.entities.Volunteer;
+import com.example.Vms.models.EventModel;
+import com.example.Vms.models.OrganisationModel;
+import com.example.Vms.models.VolunteerModel;
 import com.example.Vms.repositories.UserRepo;
 import com.example.Vms.repositories.EventRepo;
 import com.example.Vms.repositories.OrganisationRepo;
 import com.example.Vms.repositories.VolunteerRepo;
+import com.example.Vms.service.serviceinterfaces.VolunteerServiceInterface;
 import jakarta.transaction.Transactional;
-import org.apache.logging.log4j.message.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,9 +22,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class VolunteerService implements VolunteerServiceInterface {
@@ -31,11 +35,15 @@ public class VolunteerService implements VolunteerServiceInterface {
     EventRepo eventRepo;
     @Autowired
     UserRepo userRepo;
+    @Autowired
+    ModelToEntity modelToEntity;
+    @Autowired
+    EntityToModel entityToModel;
     public String add(int uid,int oid){
        if(organisationRepo.existsById(oid)&&userRepo.existsById(uid)) {
-           Organisation organisation = organisationRepo.findById(oid).get();
-           User user = userRepo.findById(uid).get();
-           if(!(user.getOrganisations().contains(organisation))) {
+           Organisation organisation = organisationRepo.findById(oid).orElse(null);
+           User user = userRepo.findById(uid).orElse(null);
+           if(organisation!=null&&user!=null&&!(user.getOrganisations().contains(organisation))) {
                user.getOrganisations().add(organisation);
                    Volunteer volunteer = new Volunteer(user);
                    volunteer.setUser(user);
@@ -53,25 +61,29 @@ public class VolunteerService implements VolunteerServiceInterface {
        }
        return "Invalid Data";
     }
-   public List<Organisation> totalOrganisations(){
-        return organisationRepo.findAll();
+   public List<OrganisationModel> totalOrganisations()
+   {
+        return organisationRepo.findAll().stream().map(entityToModel::organisationToOrganisationModel).toList();
    }
-   public List<Organisation> findOrganisationByLoc(String location){
-       return organisationRepo.findAll().stream().filter(i->i.getAddress().equals(location)).toList();
+   public List<OrganisationModel> findOrganisationByLoc(String location){
+       return organisationRepo.findAll().stream().filter(i->i.getAddress().equals(location)).map(entityToModel::organisationToOrganisationModel).toList();
    }
-   public List<Volunteer> viewVolunteersInEvent(int eid,int oid){
+   public List<VolunteerModel> viewVolunteersInEvent(int eid, int oid){
         if(eventRepo.existsById(eid)&&organisationRepo.existsById(oid)){
             Event event = eventRepo.findById(eid).orElse(null);
+            assert event != null;
             if(event.getStatus().equals("closed"))
                 return null;
             Organisation organisation = organisationRepo.findById(oid).orElse(null);
-            return volunteerRepo.findAll().stream().filter(i->i.getEvents().contains(event)&&i.getOrganisations().contains(organisation)).toList();
+            return volunteerRepo.findAll().stream().filter(i->i.getEvents().contains(event)&&i.getOrganisations().contains(organisation)).map(entityToModel::volunteerToVolunteerModel).toList();
         }
         return null;
    }
    public Set<String> showMessages(int vid){
-        if(volunteerRepo.existsById(vid)){
-            return volunteerRepo.findById(vid).orElse(null).getMessages();
+        boolean flag = volunteerRepo.existsById(vid);
+        Volunteer volunteer = volunteerRepo.findById(vid).orElse(null);
+        if(flag&&volunteer!=null){
+            return Objects.requireNonNull(volunteerRepo.findById(vid).orElse(null)).getMessages();
         }
         return null;
    }
@@ -82,9 +94,10 @@ public class VolunteerService implements VolunteerServiceInterface {
         if(event!=null&&organisation!=null){
                List<Event> events = organisation.getEvents();
                if(events.contains(event)){
+                   if(volunteer==null)
+                       return "Volunteer Doesn't Exist";
                    if(!(volunteer.getEvents().contains(event)))
                        return "event is not assigned to this volunteer";
-                   if(volunteer!=null){
                       User user = volunteer.getUser();
                       List<String> certificates = user.getCertificates();
                       certificates.add(user.getName()+"  has participated in the event "+event.getName()+" held in our organisation "+organisation.getName());
@@ -92,9 +105,7 @@ public class VolunteerService implements VolunteerServiceInterface {
                       volunteerRepo.save(volunteer);
                       user.setCertificates(certificates);
                       userRepo.save(user);
-                      return "Done";
-                    }
-                   return "Volunteer Doesn't Exist";
+                      return "You Have Completed The Event";
                }
                return "This Event Doesn't Exist In This Organisation";
         }
@@ -125,14 +136,14 @@ public class VolunteerService implements VolunteerServiceInterface {
             // Delete the volunteer from the repository
             volunteerRepo.delete(volunteer);
 
-            return "Deleted";
+            return "Successfully left";
         }
         return "Volunteer Doesn't Exist";
     }
- public List<Event> viewEventsRegistered(int vid){
+ public List<EventModel> viewEventsRegistered(int vid){
         Volunteer volunteer = volunteerRepo.findById(vid).orElse(null);
         if(volunteer!=null){
-            return volunteer.getEvents().stream().filter(i->i.getStatus().equals("active")).distinct().toList();
+            return volunteer.getEvents().stream().filter(i->i.getStatus().equals("active")).distinct().map(entityToModel::eventToEventModel).toList();
         }
         return null;
  }
@@ -157,24 +168,24 @@ public class VolunteerService implements VolunteerServiceInterface {
         }
         return "Data Invalid";
  }
- public List<Event> searchEventsBySkill(int oid,String skill){
+ public List<EventModel> searchEventsBySkill(int oid,String skill){
         Organisation organisation = organisationRepo.findById(oid).orElse(null);
-     List<Event> events = new ArrayList<>();
-        if(organisation.getEvents()!=null){
-             events = organisation.getEvents().stream().filter(i->i.getSkills_good_to_have().contains(skill)).toList();
+     List<EventModel> events = new ArrayList<>();
+        if(organisation!=null&&organisation.getEvents()!=null){
+             events = organisation.getEvents().stream().filter(i->i.getSkills_good_to_have().contains(skill)).map(entityToModel::eventToEventModel).toList();
             return events;}
         return null;
  }
- public List<Organisation> searchOrgByAddress(String address){
-       List<Organisation> organisations=  organisationRepo.findAll().stream().filter(i->i.getAddress().equals(address)).toList();
+ public List<OrganisationModel> searchOrgByAddress(String address){
+       List<OrganisationModel> organisations=  organisationRepo.findAll().stream().filter(i->i.getAddress().equals(address)).map(entityToModel::organisationToOrganisationModel).toList();
        if(!(organisations.isEmpty()))
            return organisations;
        return null;
  }
- public Volunteer get(int vid){
+ public VolunteerModel get(int vid){
         Volunteer volunteer = volunteerRepo.findById(vid).orElse(null);
         if(volunteer!=null)
-            return volunteer;
+            return entityToModel.volunteerToVolunteerModel(volunteer);
         return null;
  }
 }

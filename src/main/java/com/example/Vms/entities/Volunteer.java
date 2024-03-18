@@ -42,15 +42,6 @@ public class Volunteer {
     @JsonIgnore
     @JsonBackReference
     private List<Event>  events = new ArrayList<>();
-    public Volunteer(VolunteerModel volunteer){
-        this.name=volunteer.getName();
-        this.address=volunteer.getAddress();
-        this.events=volunteer.getEvents();
-        this.vid=volunteer.getVid();
-        this.skills=volunteer.getSkills();
-        this.messages=volunteer.getMessages();
-        this.organisations=volunteer.getOrganisations();
-    }
     public Volunteer(User user){
         this.name=user.getName();
         this.address=user.getAddress();

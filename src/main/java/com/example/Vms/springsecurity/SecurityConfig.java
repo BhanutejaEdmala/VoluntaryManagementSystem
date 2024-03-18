@@ -29,11 +29,11 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeRequests(authorizeRequests ->
                 authorizeRequests
-                        .requestMatchers(HttpMethod.POST,"/event/save").hasAnyAuthority("user","admin")
-                        .requestMatchers(HttpMethod.DELETE,"/event/delete").hasAuthority("admin")
-                        .requestMatchers(HttpMethod.PATCH,"/event/update").hasAuthority("admin")
-                        .requestMatchers(HttpMethod.GET,"/event/update").hasAnyAuthority("admin","user")
-                        .requestMatchers(HttpMethod.POST,"/org/save").hasAuthority("admin")
+                        .requestMatchers(HttpMethod.POST,"/event/saveevent").hasAnyAuthority("user","admin")
+                        .requestMatchers(HttpMethod.DELETE,"/event/deleteevent").hasAuthority("admin")
+                        .requestMatchers(HttpMethod.PATCH,"/event/updatevent").hasAuthority("admin")
+                        .requestMatchers(HttpMethod.GET,"/event/getevent").hasAnyAuthority("admin","user")
+                        .requestMatchers(HttpMethod.POST,"/org/saveorg").hasAuthority("admin")
                         .requestMatchers(HttpMethod.PATCH,"/org/addevent").hasAuthority("admin")
                         .requestMatchers(HttpMethod.PATCH,"/org/assignevent").hasAuthority("admin")
                         .requestMatchers(HttpMethod.GET,"/org/vieweventsinorg").hasAuthority("admin")
@@ -43,7 +43,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE,"/org/delete").hasAuthority("admin")
                         .requestMatchers(HttpMethod.GET,"/org/viewmessages").hasAuthority("admin")
                         .requestMatchers(HttpMethod.DELETE,"/org/removevolunteer").hasAuthority("admin")
-                        .requestMatchers(HttpMethod.GET,"/org/get").hasAnyAuthority("admin","user")
+                        .requestMatchers(HttpMethod.GET,"/org/getorg").hasAnyAuthority("admin","user")
                         .requestMatchers(HttpMethod.PATCH,"/org/closeeventfororg").hasAuthority("admin")
                         .requestMatchers(HttpMethod.PATCH,"/vol/add").hasAuthority("user")
                         .requestMatchers(HttpMethod.GET,"/vol/totalorg").hasAuthority("user")
@@ -56,14 +56,14 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,"/vol/getorgbyaddress").hasAuthority("user")
                         .requestMatchers(HttpMethod.GET,"/vol/regevents").hasAuthority("user")
                         .requestMatchers(HttpMethod.PATCH,"/vol/completeevent").hasAuthority("user")
-                        .requestMatchers(HttpMethod.GET,"/vol/get").hasAuthority("user")
+                        .requestMatchers(HttpMethod.GET,"/vol/getvolunteer").hasAuthority("user")
                         .requestMatchers(HttpMethod.POST,"/user/add").permitAll()
                         .requestMatchers(HttpMethod.DELETE,"/user/delete").hasAuthority("user")
                         .requestMatchers(HttpMethod.PATCH,"/user/update").hasAuthority("user")
                         .requestMatchers(HttpMethod.GET,"/user/regorganisations").hasAuthority("user")
                         .requestMatchers(HttpMethod.DELETE,"/user/leaveorganisation").hasAuthority("user")
                         .requestMatchers(HttpMethod.GET,"/user/viewcertificates").hasAuthority("user")
-                        .requestMatchers(HttpMethod.GET,"/user/get").hasAuthority("user")
+                        .requestMatchers(HttpMethod.GET,"/user/getuser").hasAuthority("user")
                         .requestMatchers(HttpMethod.PATCH,"/user/leaveevent").hasAuthority("user")
                         );
         http.httpBasic(Customizer.withDefaults());

@@ -39,7 +39,7 @@ public class Organisation {
     private Set<Volunteer> volunteers;
     @ManyToMany(mappedBy = "organisations",cascade =  { CascadeType.PERSIST, CascadeType.MERGE},fetch = FetchType.EAGER)
     @JsonIgnore
-    private List<Event> events;
+    private List<Event> events= new ArrayList<>();
     @ManyToMany(mappedBy = "organisations",cascade =  { CascadeType.PERSIST, CascadeType.MERGE},fetch = FetchType.EAGER)
    @JsonIgnore
     private List<User> users = new ArrayList<>();
@@ -47,12 +47,5 @@ public class Organisation {
     private List<String> messages = new ArrayList<>();
     @JsonIgnore
     private List<Integer> closedevents = new ArrayList<>();
-    public Organisation(OrganisationModel organisation){
-        this.oid=organisation.getOid();
-        this.name=organisation.getName();
-        this.address=organisation.getAddress();
-        this.events=organisation.getEvents();
-        this.mobile=organisation.getMobile();
-        this.volunteers=organisation.getVolunteers();
-    }
+
 }

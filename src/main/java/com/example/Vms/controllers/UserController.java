@@ -2,7 +2,9 @@ package com.example.Vms.controllers;
 
 import com.example.Vms.entities.Organisation;
 import com.example.Vms.entities.User;
-import com.example.Vms.service.UserService;
+import com.example.Vms.models.OrganisationModel;
+import com.example.Vms.models.UserModel;
+import com.example.Vms.service.serviceimplementationss.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,7 +18,7 @@ public class UserController {
     @Autowired
     UserService userService;
     @PostMapping("/add")
-    public User addUser(@RequestBody @Valid User user){
+    public User addUser(@RequestBody @Valid UserModel user){
         return userService.save(user);
         }
     @DeleteMapping("/delete")
@@ -31,7 +33,7 @@ public class UserController {
     }
     @GetMapping("/regorganisations")
     public ResponseEntity<?> registeredOrganisations(@RequestParam int uid){
-      List<Organisation> organisations =  userService.registeredOrganisations(uid);
+      List<OrganisationModel> organisations =  userService.registeredOrganisations(uid);
       if(organisations!=null)
           return new ResponseEntity<>(organisations, HttpStatus.FOUND);
       return new ResponseEntity<>("You Haven't Registered In Any Organisation",HttpStatus.FOUND);
@@ -47,9 +49,9 @@ public class UserController {
             return new ResponseEntity<>(userService.viewCertifications(uid).toString(), HttpStatus.FOUND);
         return new ResponseEntity<>("No Data Found", HttpStatus.NOT_FOUND);
     }
-    @GetMapping("/get")
+    @GetMapping("/getuser")
     public ResponseEntity<?> getUser(@RequestParam int uid){
-        User user = userService.getUser(uid);
+        UserModel user = userService.getUser(uid);
         if(user!=null)
             return new ResponseEntity<>(user,HttpStatus.FOUND);
         return new ResponseEntity<>("No User Found",HttpStatus.NOT_FOUND);

@@ -2,11 +2,12 @@ package com.example.Vms.controllers;
 
 import com.example.Vms.entities.Event;
 import com.example.Vms.entities.Organisation;
-import com.example.Vms.entities.User;
 import com.example.Vms.entities.Volunteer;
+import com.example.Vms.models.EventModel;
+import com.example.Vms.models.OrganisationModel;
 import com.example.Vms.models.VolunteerModel;
-import com.example.Vms.service.UserService;
-import com.example.Vms.service.VolunteerService;
+import com.example.Vms.service.serviceimplementationss.UserService;
+import com.example.Vms.service.serviceimplementationss.VolunteerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,21 +32,21 @@ public class VolunteerController {
     }
     @GetMapping("/totalorg")
     public ResponseEntity<?> totalOrganisations(){
-       List<Organisation> organisationList = volunteerService.totalOrganisations();
+       List<OrganisationModel> organisationList = volunteerService.totalOrganisations();
        if(!(organisationList.isEmpty()))
          return new ResponseEntity<>(organisationList,HttpStatus.FOUND);
        return new ResponseEntity<>("No Organisations Found",HttpStatus.NO_CONTENT);
     }
     @GetMapping("/vieworgbyloc")
     public ResponseEntity<?> viewOrgByLoc(@RequestParam String location){
-List<Organisation> organisations = volunteerService.findOrganisationByLoc(location);
+List<OrganisationModel> organisations = volunteerService.findOrganisationByLoc(location);
 if(organisations.isEmpty())
     return new ResponseEntity<>("No Organisations Found With That Location",HttpStatus.NOT_FOUND);
 return  new ResponseEntity<>(organisations,HttpStatus.FOUND);
     }
     @GetMapping("/viewvolunteersinevent")
     public ResponseEntity<?> viewVolInEvent(@RequestParam int eid,@RequestParam int oid){
-       List<Volunteer> volunteers = volunteerService.viewVolunteersInEvent(eid,oid);
+       List<VolunteerModel> volunteers = volunteerService.viewVolunteersInEvent(eid,oid);
        if(volunteers==null)
            return  new ResponseEntity<>("No Data Found",HttpStatus.NOT_FOUND);
        return new ResponseEntity<>(volunteers,HttpStatus.FOUND);
@@ -72,21 +73,21 @@ return  new ResponseEntity<>(organisations,HttpStatus.FOUND);
     @GetMapping("/search")
     public ResponseEntity<?> searchEventsBySkill(@RequestParam int oid,@RequestParam String skill){
         System.out.println("hi");
-       List<Event> events = volunteerService.searchEventsBySkill(oid,skill);
+       List<EventModel> events = volunteerService.searchEventsBySkill(oid,skill);
        if(!(events.isEmpty()))
            return new ResponseEntity<>(events,HttpStatus.FOUND);
        return new ResponseEntity<>("No Events Found",HttpStatus.NOT_FOUND);
     }
     @GetMapping("/getorgbyaddress")
     public ResponseEntity<?> searchOrgByAddress(@RequestParam String address){
-       List<Organisation> organisations = volunteerService.searchOrgByAddress(address);
+       List<OrganisationModel> organisations = volunteerService.searchOrgByAddress(address);
        if(organisations!=null)
            return new ResponseEntity<>(organisations,HttpStatus.FOUND);
        return new ResponseEntity<>("No Organisation Found",HttpStatus.NOT_FOUND);
     }
     @GetMapping("/regevents")
     public ResponseEntity<?> registeredEvents(@RequestParam int vid){
-       List<Event> events = volunteerService.viewEventsRegistered(vid);
+       List<EventModel> events = volunteerService.viewEventsRegistered(vid);
        if(events!=null)
            return new ResponseEntity<>(events,HttpStatus.FOUND);
        return new ResponseEntity<>("You Are Yet To Register In Any Event",HttpStatus.NOT_FOUND);
@@ -96,9 +97,9 @@ return  new ResponseEntity<>(organisations,HttpStatus.FOUND);
       String result = volunteerService.CompleteEvent(vid,eid,oid);
       return new ResponseEntity<>(result,HttpStatus.OK);
     }
-    @GetMapping("/get")
+    @GetMapping("/getvolunteer")
     public ResponseEntity<?> get(@RequestParam int vid){
-        Volunteer volunteer = volunteerService.get(vid);
+        VolunteerModel volunteer = volunteerService.get(vid);
         if(volunteer!=null)
             return new ResponseEntity<>(volunteer,HttpStatus.FOUND);
         return new ResponseEntity<>("No Volunteer Found",HttpStatus.NOT_FOUND);

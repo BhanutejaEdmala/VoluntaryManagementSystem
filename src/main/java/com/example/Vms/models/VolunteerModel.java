@@ -24,14 +24,5 @@ import java.util.Set;
         private Set<String> skills = new LinkedHashSet<>();
         private Set<Organisation> organisations = new LinkedHashSet<>();
         private List<Event> events = new ArrayList<>();
-        public VolunteerModel(Volunteer volunteer){
-            this.name=volunteer.getName();
-            this.address=volunteer.getAddress();
-            this.events=volunteer.getEvents();
-            this.vid=volunteer.getVid();
-            this.skills=volunteer.getSkills();
-            this.messages=volunteer.getMessages();
-            this.organisations=volunteer.getOrganisations();
-        }
     }
 

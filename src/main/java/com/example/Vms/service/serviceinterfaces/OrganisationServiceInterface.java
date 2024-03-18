@@ -1,4 +1,4 @@
-package com.example.Vms.service;
+package com.example.Vms.service.serviceinterfaces;
 
 import com.example.Vms.entities.Event;
 import com.example.Vms.entities.Organisation;
@@ -8,13 +8,13 @@ import com.example.Vms.models.OrganisationModel;
 import java.util.List;
 
 public interface OrganisationServiceInterface {
-    OrganisationModel save(Organisation organisation);
+    OrganisationModel save(OrganisationModel organisation);
 
-    EventModel addEvent(int oid, int eid);
+    String addEvent(int oid, int eid);
 
     String assignEvent(int vid, int eid, int oid);
 
-    List<Event> viewEventsInOrganisation(int oid);
+    List<EventModel> viewEventsInOrganisation(int oid);
 
     String sendMessage(int vid, int oid, String message);
 
@@ -32,5 +32,5 @@ public interface OrganisationServiceInterface {
 
     List<String> viewMessagesOfVolunteers(int oid);
 
-    Organisation get(int oid);
+    OrganisationModel get(int oid);
 }
