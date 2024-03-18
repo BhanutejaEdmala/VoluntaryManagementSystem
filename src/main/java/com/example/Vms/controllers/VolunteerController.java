@@ -24,8 +24,8 @@ public class VolunteerController {
     @Autowired
     UserService  userService;
    @PatchMapping("/add")
-    public ResponseEntity<?> add(@RequestParam int uid, @RequestParam int oid){
-       String result = volunteerService.add(uid,oid);
+    public ResponseEntity<?> add(@RequestParam int userId, @RequestParam int organisationId){
+       String result = volunteerService.add(userId,organisationId);
        if(result.equals("Registered Successfully"))
            return new ResponseEntity<>(result, HttpStatus.CREATED);
        return new ResponseEntity<>(result,HttpStatus.NOT_FOUND);
@@ -45,35 +45,35 @@ if(organisations.isEmpty())
 return  new ResponseEntity<>(organisations,HttpStatus.FOUND);
     }
     @GetMapping("/viewvolunteersinevent")
-    public ResponseEntity<?> viewVolInEvent(@RequestParam int eid,@RequestParam int oid){
-       List<VolunteerModel> volunteers = volunteerService.viewVolunteersInEvent(eid,oid);
+    public ResponseEntity<?> viewVolInEvent(@RequestParam int eventId,@RequestParam int organisationID){
+       List<VolunteerModel> volunteers = volunteerService.viewVolunteersInEvent(eventId,organisationID);
        if(volunteers==null)
            return  new ResponseEntity<>("No Data Found",HttpStatus.NOT_FOUND);
        return new ResponseEntity<>(volunteers,HttpStatus.FOUND);
     }
     @GetMapping("/viewmessages")
-    public ResponseEntity<?> viewMessage(int vid){
-       Set<String> result = volunteerService.showMessages(vid);
+    public ResponseEntity<?> viewMessage(int volunteerId){
+       Set<String> result = volunteerService.showMessages(volunteerId);
        if(result!=null)
             return new ResponseEntity<>(result,HttpStatus.CREATED);
        return new ResponseEntity<>("No Volunteer Found",HttpStatus.NOT_FOUND);
     }
     @DeleteMapping("/delete")
-    public ResponseEntity<?> deleteVolunteer(int vid){
-       String result = volunteerService.leaveOrganisation(vid);
+    public ResponseEntity<?> deleteVolunteer(int volunteerId){
+       String result = volunteerService.leaveOrganisation(volunteerId);
        return ResponseEntity.ok(result);
     }
     @PatchMapping("/sendmessage")
-    public ResponseEntity<?> sendMessage(@RequestParam int oid, @RequestParam int vid,@RequestParam String message){
-       String result = volunteerService.sendMessageToOrganisation(oid,vid,message);
+    public ResponseEntity<?> sendMessage(@RequestParam int organisationId, @RequestParam int volunteerId,@RequestParam String message){
+       String result = volunteerService.sendMessageToOrganisation(organisationId,volunteerId,message);
        if(result!=null)
            return ResponseEntity.ok(result);
        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
     @GetMapping("/search")
-    public ResponseEntity<?> searchEventsBySkill(@RequestParam int oid,@RequestParam String skill){
+    public ResponseEntity<?> searchEventsBySkill(@RequestParam int organisationId,@RequestParam String skill){
         System.out.println("hi");
-       List<EventModel> events = volunteerService.searchEventsBySkill(oid,skill);
+       List<EventModel> events = volunteerService.searchEventsBySkill(organisationId,skill);
        if(!(events.isEmpty()))
            return new ResponseEntity<>(events,HttpStatus.FOUND);
        return new ResponseEntity<>("No Events Found",HttpStatus.NOT_FOUND);
@@ -86,20 +86,20 @@ return  new ResponseEntity<>(organisations,HttpStatus.FOUND);
        return new ResponseEntity<>("No Organisation Found",HttpStatus.NOT_FOUND);
     }
     @GetMapping("/regevents")
-    public ResponseEntity<?> registeredEvents(@RequestParam int vid){
-       List<EventModel> events = volunteerService.viewEventsRegistered(vid);
+    public ResponseEntity<?> registeredEvents(@RequestParam int volunteerId){
+       List<EventModel> events = volunteerService.viewEventsRegistered(volunteerId);
        if(events!=null)
            return new ResponseEntity<>(events,HttpStatus.FOUND);
        return new ResponseEntity<>("You Are Yet To Register In Any Event",HttpStatus.NOT_FOUND);
     }
     @PatchMapping("/completeevent")
-    public ResponseEntity<?> completeEvent(@RequestParam int vid,@RequestParam int eid,@RequestParam int oid){
-      String result = volunteerService.CompleteEvent(vid,eid,oid);
+    public ResponseEntity<?> completeEvent(@RequestParam int volunteerId,@RequestParam int eventId,@RequestParam int organiationId){
+      String result = volunteerService.CompleteEvent(volunteerId,eventId,organiationId);
       return new ResponseEntity<>(result,HttpStatus.OK);
     }
     @GetMapping("/getvolunteer")
-    public ResponseEntity<?> get(@RequestParam int vid){
-        VolunteerModel volunteer = volunteerService.get(vid);
+    public ResponseEntity<?> get(@RequestParam int volunteerId){
+        VolunteerModel volunteer = volunteerService.get(volunteerId);
         if(volunteer!=null)
             return new ResponseEntity<>(volunteer,HttpStatus.FOUND);
         return new ResponseEntity<>("No Volunteer Found",HttpStatus.NOT_FOUND);

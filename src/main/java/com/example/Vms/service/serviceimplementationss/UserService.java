@@ -44,8 +44,8 @@ EntityToModel entityToModel;
         return userRepo.save(user1);
     }
 
-    public String deleteUser(int uid) {
-        User user = userRepo.findById(uid).orElse(null);
+    public String deleteUser(int userId) {
+        User user = userRepo.findById(userId).orElse(null);
         if (user != null) {
             // Retrieve related entities
             List<Volunteer> volunteers = volunteerRepo.findAll();
@@ -61,8 +61,8 @@ EntityToModel entityToModel;
         return "User Not Found";
     }
 
-    public String updateUser(int uid, User user) {
-        User user1 = userRepo.findById(uid).orElse(null);
+    public String updateUser(int userId, User user) {
+        User user1 = userRepo.findById(userId).orElse(null);
         if (user1 != null) {
             user1.setName(user.getName());
             user1.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -81,21 +81,22 @@ EntityToModel entityToModel;
         return "User Doesn't Exist";
     }
 
-    public List<OrganisationModel> registeredOrganisations(int uid) {
-        User user = userRepo.findById(uid).orElse(null);
+    public List<OrganisationModel> registeredOrganisations(int userId) {
+        User user = userRepo.findById(userId).orElse(null);
         if (user != null) {
             return user.getOrganisations().stream().map(entityToModel::organisationToOrganisationModel).toList();
         }
         return null;
     }
 
-    public String leaveOrgaisation(int oid, int uid) {
-        Organisation organisation = organisationRepo.findById(oid).orElse(null);
-        User user = userRepo.findById(uid).orElse(null);
+    public String leaveOrgaisation(int organisationId, int userId) {
+        Organisation organisation = organisationRepo.findById(organisationId).orElse(null);
+        User user = userRepo.findById(userId).orElse(null);
         if (organisation != null && user != null) {
             if (organisation.getUsers().contains(user)) {
                 List<Volunteer> volunteers = volunteerRepo.findAll();
                 Volunteer volunteer = volunteers.stream().filter(i -> i.getUser().equals(user) && i.getOrganisations().contains(organisation)).findFirst().orElse(null);
+                assert volunteer != null;
                 volunteerService.leaveOrganisation(volunteer.getVid());
                 organisation.getUsers().remove(user);
                 organisationRepo.save(organisation);
@@ -108,8 +109,8 @@ EntityToModel entityToModel;
         return "No Data Found";
     }
 
-    public Object viewCertifications(int uid) {
-        User user = userRepo.findById(uid).orElse(null);
+    public Object viewCertifications(int userId) {
+        User user = userRepo.findById(userId).orElse(null);
         if (user != null) {
             List<String> certificates = user.getCertificates();
             if (!(certificates .isEmpty()))
@@ -118,10 +119,10 @@ EntityToModel entityToModel;
         }
         return null;
     }
-    public String leaveEvent(int uid,int eid,int oid){
-        User user = userRepo.findById(uid).orElse(null);
-        Event event = eventRepo.findById(eid).orElse(null);
-        Organisation organisation = organisationRepo.findById(oid).orElse(null);
+    public String leaveEvent(int userId,int eventId,int organisatonId){
+        User user = userRepo.findById(userId).orElse(null);
+        Event event = eventRepo.findById(eventId).orElse(null);
+        Organisation organisation = organisationRepo.findById(organisatonId).orElse(null);
         if(user!=null&&event!=null&&organisation!=null){
             List<Volunteer> volunteers = volunteerRepo.findAll();
            Volunteer volunteer= volunteers.stream().filter(i->i.getUser().equals(user)&&i.getOrganisations().contains(organisation)).findFirst().orElse(null);
@@ -136,11 +137,10 @@ EntityToModel entityToModel;
         }
         return "Make Sure To Enter Correct Details";
     }
-    public UserModel getUser(int uid){
-      User user = userRepo.findById(uid).orElse(null);
+    public UserModel getUser(int userId){
+      User user = userRepo.findById(userId).orElse(null);
       if(user!=null){
-      UserModel userModel = entityToModel.userEntityToModel(user);
-        return userModel;}
+          return entityToModel.userEntityToModel(user);}
       return null;
     }
 }

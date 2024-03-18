@@ -24,73 +24,73 @@ public class OrganisationController {
          return new ResponseEntity<>("Organisation Saved", HttpStatus.CREATED);
 }
 @PatchMapping("/addevent")
-    public ResponseEntity<?> addEvent(@RequestParam int oid, @RequestParam int eid){
-    String result =  organisationService.addEvent(oid,eid);
+    public ResponseEntity<?> addEvent(@RequestParam int organisationId, @RequestParam int eventId){
+    String result =  organisationService.addEvent(organisationId,eventId);
         return new ResponseEntity<>(result,HttpStatus.CREATED);
 }
 @PatchMapping("/assignevent")
-    public ResponseEntity<?> assignEvent(@RequestParam int vid,@RequestParam int eid,@RequestParam int oid){
-    String result = organisationService.assignEvent(vid,eid,oid);
+    public ResponseEntity<?> assignEvent(@RequestParam int volunteerId,@RequestParam int eventId,@RequestParam int organisationId){
+    String result = organisationService.assignEvent(volunteerId,eventId,organisationId);
     if(result!=null)
         return new ResponseEntity<>(result,HttpStatus.CREATED);
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Check Whether The Details Are Exist In The First Place");
 }
 @GetMapping("/vieweventsinorg")
-    public ResponseEntity<?> viewEventsInOrg(@RequestParam int oid){
-    List<EventModel> eventList = organisationService.viewEventsInOrganisation(oid);
+    public ResponseEntity<?> viewEventsInOrg(@RequestParam int organisationI){
+    List<EventModel> eventList = organisationService.viewEventsInOrganisation(organisationI);
     if(!(eventList.isEmpty()))
         return new ResponseEntity<>(eventList,HttpStatus.FOUND);
     return new ResponseEntity<>("No Organisation Found",HttpStatus.NOT_FOUND);
 }
 @PatchMapping("/sendmessage")
-    public ResponseEntity<?> sendMessage(@RequestParam int vid,@RequestParam int oid,@RequestParam String message){
-    String result = organisationService.sendMessage(vid,oid,message);
+    public ResponseEntity<?> sendMessage(@RequestParam int volunteerId,@RequestParam int organisationId,@RequestParam String message){
+    String result = organisationService.sendMessage(volunteerId,organisationId,message);
      if(result!=null)
          return new ResponseEntity<>(result,HttpStatus.ACCEPTED);
      return new ResponseEntity<>("Check For The Existence Of The Details You Are Trying To Access ",HttpStatus.NOT_FOUND);
 }
 @PatchMapping("/groupmessage")
-    public ResponseEntity<?> groupMessage(@RequestParam  int oid,@RequestParam String message){
-   String result= organisationService.groupMessage(oid,message);
+    public ResponseEntity<?> groupMessage(@RequestParam  int organisationId,@RequestParam String message){
+   String result= organisationService.groupMessage(organisationId,message);
     return ResponseEntity.ok(result);
 }
 @PatchMapping("/suggest")
-    public ResponseEntity<?> suggestVolunteers(@RequestParam int eid,@RequestParam int oid){
-    String result = organisationService.suggestVolunteers(eid,oid);
+    public ResponseEntity<?> suggestVolunteers(@RequestParam int eventId,@RequestParam int organisationId){
+    String result = organisationService.suggestVolunteers(eventId,organisationId);
     return ResponseEntity.ok(result);
 }
 @DeleteMapping("/delete")
-    public ResponseEntity<?> deleteOrganisation(@RequestParam int oid){
-    String result = organisationService.removeOrganization(oid);
+    public ResponseEntity<?> deleteOrganisation(@RequestParam int organisationId){
+    String result = organisationService.removeOrganization(organisationId);
     return ResponseEntity.ok(result);
 }
 @GetMapping("/viewmessages")
-    public ResponseEntity<?> viewMessages(int oid){
-  List<String> messages =  organisationService.viewMessagesOfVolunteers(oid);
+    public ResponseEntity<?> viewMessages(int organisationId){
+  List<String> messages =  organisationService.viewMessagesOfVolunteers(organisationId);
   if(messages!=null)
       return ResponseEntity.ok(messages);
   return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No Messages Found");
 }
 @PatchMapping("/closeevent")
-public ResponseEntity<?> closeevent(@RequestParam int eid){
-    String result= organisationService.closeEvent(eid);
+public ResponseEntity<?> closeevent(@RequestParam int eventId){
+    String result= organisationService.closeEvent(eventId);
     return new ResponseEntity<>(result,HttpStatus.OK);
 }
 @DeleteMapping("/removevolunteer")
-    public ResponseEntity<?> removeVolunteer(@RequestParam int vid){
-    String result = organisationService.removeVolunteer(vid);
+    public ResponseEntity<?> removeVolunteer(@RequestParam int volunteerId){
+    String result = organisationService.removeVolunteer(volunteerId);
      return new ResponseEntity<>(result,HttpStatus.OK);
 }
 @GetMapping("/getorg")
-    public ResponseEntity<?> get(@RequestParam int oid){
-    OrganisationModel organisation = organisationService.get(oid);
+    public ResponseEntity<?> get(@RequestParam int organisationId){
+    OrganisationModel organisation = organisationService.get(organisationId);
     if(organisation!=null)
         return new ResponseEntity<>(organisation,HttpStatus.FOUND);
     return new ResponseEntity<>("No Organisation Found",HttpStatus.NOT_FOUND);
 }
 @PatchMapping("/closeeventfororg")
-    public ResponseEntity<?> closeEvent(@RequestParam int eid,@RequestParam int oid){
-    String result = organisationService.closeEventForOrg(eid,oid);
+    public ResponseEntity<?> closeEvent(@RequestParam int eventId,@RequestParam int organisationId){
+    String result = organisationService.closeEventForOrg(eventId,organisationId);
     return new ResponseEntity<>(result,HttpStatus.OK);
     }
 }

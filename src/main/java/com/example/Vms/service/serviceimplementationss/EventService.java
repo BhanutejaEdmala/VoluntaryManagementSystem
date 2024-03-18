@@ -32,8 +32,8 @@ public class EventService implements EventServiceInterface {
        eventRepo.save(event);
         return eventModel;
     }
-    public String deleteEvent(int eid){
-        Event event = eventRepo.findById(eid).orElse(null);
+    public String deleteEvent(int eventId){
+        Event event = eventRepo.findById(eventId).orElse(null);
         if(event!=null){
             List<Organisation> organisations = organisationRepo.findAll();
             List<Volunteer> volunteers = volunteerRepo.findAll();
@@ -42,14 +42,14 @@ public class EventService implements EventServiceInterface {
             volunteerRepo.saveAll(volunteers);
             organisationRepo.saveAll(organisations);
             eventRepo.delete(event);
-            return "Deleted";
+            return "Event Deleted";
         }
         return "Event Doesn't Exist";
     }
-    public String updateEvent(Event event,int eid){
-        Event event1 = eventRepo.findById(eid).orElse(null);
+    public String updateEvent(Event event,int eventId){
+        Event event1 = eventRepo.findById(eventId).orElse(null);
         if(event1!=null&&!(event1.getVolunteerList().isEmpty()))
-             return "This Event Is Already Assigned To Few Volunteers , Updating It Might Leads To Confusion";
+             return "This Event Is Already Assigned To Few Volunteers , Updating It Might Lead To Confusion";
         if(event1!=null){
            event1.setName(event.getName());
            event1.setDate(event.getDate());
@@ -58,12 +58,12 @@ public class EventService implements EventServiceInterface {
            event1.setStatus(event.getStatus());
            event1.getSkills_good_to_have().addAll(event.getSkills_good_to_have());
            eventRepo.save(event1);
-           return "updated";
+           return "Event updated";
         }
         return null;
     }
-    public EventModel get(int eid){
-        Event event = eventRepo.findById(eid).orElse(null);
-        return event!=null ?entityToModel.eventToEventModel(event):null;
+    public EventModel get(int eventId){
+        Event event = eventRepo.findById(eventId).orElse(null);
+        return event!=null ? entityToModel.eventToEventModel(event) : null;
     }
 }

@@ -15,10 +15,7 @@ import com.example.Vms.repositories.VolunteerRepo;
 import com.example.Vms.service.serviceinterfaces.OrganisationServiceInterface;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
 import org.springframework.util.CollectionUtils;
-
-import javax.xml.crypto.Data;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -37,8 +34,6 @@ public class OrganisationService implements OrganisationServiceInterface {
     @Autowired
     UserService userService;
     @Autowired
-    VolunteerService volunteerService;
-    @Autowired
     EntityToModel entityToModel;
     @Autowired
     ModelToEntity modelToEntity;
@@ -49,25 +44,25 @@ public class OrganisationService implements OrganisationServiceInterface {
         return organisationModel;}
         return null;
     }
-    public String addEvent(int oid,int eid) {
-    if(organisationRepo.existsById(oid)&&eventRepo.existsById(eid)){
-        Organisation organisation = organisationRepo.findById(oid).orElse(null);
-        Event event = eventRepo.findById(eid).orElse(null);
+    public String addEvent(int organisationId,int eventId) {
+    if(organisationRepo.existsById(organisationId)&&eventRepo.existsById(eventId)){
+        Organisation organisation = organisationRepo.findById(organisationId).orElse(null);
+        Event event = eventRepo.findById(eventId).orElse(null);
         if(organisation!=null&&event!=null&&!(organisation.getEvents().contains(event))&&event.getStatus().equals("active")){
             event.getOrganisations().add(organisation);
             organisation.getEvents().add(event);
             organisationRepo.save(organisation);
             return "Event Added";
         }
-        return "This Event Might Be Already Present In This Organisation OR This Event Might Be Closed";
+        return "This Event Might Already Be Present In This Organisation OR This Event Might Be Closed";
     }
     return  "Check Whether Those Organisation And Event Exist In The First Place";
 }
-public String assignEvent(int vid,int eid,int oid){
-        if(volunteerRepo.existsById(vid)&&eventRepo.existsById(eid)&&organisationRepo.existsById(oid)){
-            Event event = eventRepo.findById(eid).orElse(null);
-            Organisation organisation = organisationRepo.findById(oid).orElse(null);
-            Volunteer volunteer = volunteerRepo.findById(vid).orElse(null);
+public String assignEvent(int volunteerId,int eventId,int organisationId){
+        if(volunteerRepo.existsById(volunteerId)&&eventRepo.existsById(eventId)&&organisationRepo.existsById(organisationId)){
+            Event event = eventRepo.findById(eventId).orElse(null);
+            Organisation organisation = organisationRepo.findById(organisationId).orElse(null);
+            Volunteer volunteer = volunteerRepo.findById(volunteerId).orElse(null);
             List<Event> events = new ArrayList<>();
              if(volunteer!=null)
                 events = volunteer.getEvents();
@@ -81,7 +76,7 @@ public String assignEvent(int vid,int eid,int oid){
             })){
                 return "Volunteer Already Assigned To Another Event During The Timings Of This Event";}
             if(volunteer!=null&&volunteer.getOrganisations().contains(organisation)&&organisation!=null&&organisation.getEvents().contains(event)&&event!=null){
-                if(!(event.getStatus().equals("active"))||organisation.getClosedevents().contains(eid))
+                if(!(event.getStatus().equals("active"))||organisation.getClosedevents().contains(eventId))
                     return "This Event Is Closed";
                 event.getVolunteerList().add(volunteer);
                 volunteer.getEvents().add(event);
@@ -92,19 +87,19 @@ public String assignEvent(int vid,int eid,int oid){
         }
         return  null;
 }
-public List<EventModel> viewEventsInOrganisation(int oid){
-       if(organisationRepo.existsById(oid)){
-           Organisation organisation = organisationRepo.findById(oid).orElse(null);
+public List<EventModel> viewEventsInOrganisation(int organisationId){
+       if(organisationRepo.existsById(organisationId)){
+           Organisation organisation = organisationRepo.findById(organisationId).orElse(null);
            if(organisation!=null&&organisation.getEvents().isEmpty())
                return new ArrayList<>();
            return organisation!=null?organisation.getEvents().stream().filter(i->!(i.getStatus().equals("closed"))).map(entityToModel::eventToEventModel).toList():null;
        }
 return  null;
 }
-public String sendMessage(int vid, int oid, String message){
-        if(volunteerRepo.existsById(vid)&&organisationRepo.existsById(oid)){
-            Volunteer volunteer = volunteerRepo.findById(vid).orElse(null);
-            Organisation organisation = organisationRepo.findById(oid).orElse(null);
+public String sendMessage(int volunteerId, int organisationId, String message){
+        if(volunteerRepo.existsById(volunteerId)&&organisationRepo.existsById(organisationId)){
+            Volunteer volunteer = volunteerRepo.findById(volunteerId).orElse(null);
+            Organisation organisation = organisationRepo.findById(organisationId).orElse(null);
             if(volunteer!=null&&volunteer.getOrganisations().contains(organisation)){
                 LocalDateTime currentDateTime = LocalDateTime.now();
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm yyyy-MM-dd");
@@ -119,9 +114,9 @@ public String sendMessage(int vid, int oid, String message){
         }
         return null;
 }
-    public String groupMessage(int oid, String message) {
-        if (organisationRepo.existsById(oid)) {
-            Organisation organisation = organisationRepo.findById(oid).orElse(null);
+    public String groupMessage(int organisationId, String message) {
+        if (organisationRepo.existsById(organisationId)) {
+            Organisation organisation = organisationRepo.findById(organisationId).orElse(null);
             if (organisation != null) {
                 Set<Volunteer> volunteers = new HashSet<>(organisation.getVolunteers()); // Create a copy of the set
                 LocalDateTime currentDateTime = LocalDateTime.now();
@@ -137,10 +132,10 @@ public String sendMessage(int vid, int oid, String message){
         }
         return "No Organisation Found";
     }
-    public String suggestVolunteers(int eid,int oid){
-        if(eventRepo.existsById(eid)&&organisationRepo.existsById(oid)){
-           Event event = eventRepo.findById(eid).orElse(null);
-           Organisation organisation = organisationRepo.findById(oid).orElse(null);
+    public String suggestVolunteers(int eventId,int organisationId){
+        if(eventRepo.existsById(eventId)&&organisationRepo.existsById(organisationId)){
+           Event event = eventRepo.findById(eventId).orElse(null);
+           Organisation organisation = organisationRepo.findById(organisationId).orElse(null);
            if(event!=null&&organisation!=null&&organisation.getEvents().contains(event)){
                Set<String> skills = event.getSkills_good_to_have();
                List<Volunteer> volunteers = new ArrayList<>(organisation.getVolunteers());
@@ -160,8 +155,8 @@ public String sendMessage(int vid, int oid, String message){
         return "No Data Found";
     }
     @Transactional
-    public String removeOrganization(int oid) {
-        Organisation organisation = organisationRepo.findById(oid).orElse(null);
+    public String removeOrganization(int organisationId) {
+        Organisation organisation = organisationRepo.findById(organisationId).orElse(null);
         if (organisation != null) {
             // Retrieve related entities
             List<Volunteer> volunteers = new ArrayList<>(organisation.getVolunteers());
@@ -184,12 +179,12 @@ public String sendMessage(int vid, int oid, String message){
             // Save changes
             organisationRepo.save(organisation);
             organisationRepo.delete(organisation);
-            return "Organisation with ID " + oid + " has been removed.";
+            return "Organisation with ID " + organisationId + " has been removed.";
         }
-        return "Organisation with ID " + oid + " does not exist.";
+        return "Organisation with ID " + organisationId + " does not exist.";
     }
-    public String updateOrganisation(Organisation organisation,int oid){
-        Organisation organisation1 = organisationRepo.findById(oid).orElse(null);
+    public String updateOrganisation(Organisation organisation,int organisationId){
+        Organisation organisation1 = organisationRepo.findById(organisationId).orElse(null);
         if(organisation1!=null){
             organisation1.setName(organisation.getName());
             organisation1.setAddress(organisation.getAddress());
@@ -199,19 +194,19 @@ public String sendMessage(int vid, int oid, String message){
         }
         return "organisation doesn't exist";
     }
-    public String closeEventForOrg(int eid,int oid){
-        Event event = eventRepo.findById(eid).orElse(null);
-        Organisation organisation = organisationRepo.findById(oid).orElse(null);
+    public String closeEventForOrg(int eventId,int organisationID){
+        Event event = eventRepo.findById(eventId).orElse(null);
+        Organisation organisation = organisationRepo.findById(organisationID).orElse(null);
         List<Integer> events = new ArrayList<>();;
         if(event!=null&&organisation!=null) {
             List<Volunteer> volunteers = event.getVolunteerList();
             if(!(organisation.getEvents().contains(event)))
                 return "No Such Event Found In This Organisation";
             if (organisation.getClosedevents() != null) {
-                events.add(eid);
+                events.add(eventId);
                 organisation.setClosedevents(events);
             } else {
-                events.add(eid);
+                events.add(eventId);
                 organisation.setClosedevents(events);
             }
             if(!(volunteers.isEmpty())){
@@ -219,7 +214,7 @@ public String sendMessage(int vid, int oid, String message){
                 for (Volunteer volunteer : volunteersToRemove) {
                     int uid = volunteer.getUser().getUid();
                     try{
-                    userService.leaveEvent(uid, eid, oid);}
+                    userService.leaveEvent(uid, eventId, organisationID);}
                     catch(Exception e){
                     System.out.println();}
                 }
@@ -230,8 +225,8 @@ public String sendMessage(int vid, int oid, String message){
         return "No Data Found";
     }
     @Transactional
-    public String removeVolunteer(int vid) {
-        Volunteer volunteer = volunteerRepo.findById(vid).orElse(null);
+    public String removeVolunteer(int volunteerId) {
+        Volunteer volunteer = volunteerRepo.findById(volunteerId).orElse(null);
         if (volunteer != null) {
             List<Organisation> organisations = organisationRepo.findAll();
             List<Event> events = eventRepo.findAll();
@@ -252,16 +247,16 @@ public String sendMessage(int vid, int oid, String message){
         }
         return "Volunteer Doesn't Exist";
     }
-    public List<String> viewMessagesOfVolunteers(int oid){
-        Organisation organisation = organisationRepo.findById(oid).orElse(null);
+    public List<String> viewMessagesOfVolunteers(int organisationId){
+        Organisation organisation = organisationRepo.findById(organisationId).orElse(null);
         return organisation!=null?organisation.getMessages():null;
     }
-    public OrganisationModel get(int oid){
-        Organisation organisation = organisationRepo.findById(oid).orElse(null);
+    public OrganisationModel get(int organisationId){
+        Organisation organisation = organisationRepo.findById(organisationId).orElse(null);
         return organisation!=null ? entityToModel.organisationToOrganisationModel(organisation):null;
     }
-    public String closeEvent(int eid){
-        Event event = eventRepo.findById(eid).orElse(null);
+    public String closeEvent(int eventId){
+        Event event = eventRepo.findById(eventId).orElse(null);
         if(event!=null){
             List<Volunteer> volunteers = new ArrayList<>();
             volunteers = event.getVolunteerList();

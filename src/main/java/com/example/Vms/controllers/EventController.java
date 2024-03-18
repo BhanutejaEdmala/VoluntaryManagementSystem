@@ -21,18 +21,18 @@ public class EventController {
         return new ResponseEntity<>(event, HttpStatus.CREATED);
     }
     @DeleteMapping("/deleteevent")
-    public ResponseEntity<?> delete(@RequestParam int eid){
-        String result = eventService.deleteEvent(eid);
+    public ResponseEntity<?> delete(@RequestParam int eventId){
+        String result = eventService.deleteEvent(eventId);
         return ResponseEntity.ok(result);
     }
     @PatchMapping("/updateevent")
-    public ResponseEntity<?> updateEvent(@RequestBody  Event event,@RequestParam int eid){
-        String result = eventService.updateEvent(event,eid);
+    public ResponseEntity<?> updateEvent(@RequestBody  Event event,@RequestParam int eventId){
+        String result = eventService.updateEvent(event,eventId);
         return ResponseEntity.ok(result);
     }
     @GetMapping("/getevent")
-    public ResponseEntity<?> get(@RequestParam int eid){
-        EventModel event = eventService.get(eid);
+    public ResponseEntity<?> get(@RequestParam int eventId){
+        EventModel event = eventService.get(eventId);
         if(event!=null)
             return new ResponseEntity<>(event,HttpStatus.FOUND);
         return new ResponseEntity<>("No Event Found",HttpStatus.NOT_FOUND);

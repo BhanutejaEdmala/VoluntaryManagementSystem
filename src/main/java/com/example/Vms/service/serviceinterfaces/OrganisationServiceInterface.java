@@ -33,4 +33,5 @@ public interface OrganisationServiceInterface {
     List<String> viewMessagesOfVolunteers(int oid);
 
     OrganisationModel get(int oid);
+    boolean timingsCompare(String[] newTimings,String[] existTimings);
 }
