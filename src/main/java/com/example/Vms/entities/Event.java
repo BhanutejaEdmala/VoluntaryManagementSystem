@@ -1,5 +1,6 @@
 package com.example.Vms.entities;
 import com.example.Vms.models.EventModel;
+import com.example.Vms.validation.Date;
 import com.example.Vms.validation.MyValid;
 import com.example.Vms.validation.Timings;
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -27,6 +28,7 @@ public class Event {
     @NotEmpty
     private String location;
     @NotEmpty
+    @Date
     private String date;
     @MyValid
     private Set<String> skills_good_to_have = new LinkedHashSet<>();
