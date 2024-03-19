@@ -6,9 +6,9 @@ import com.example.Vms.models.EventModel;
 public interface EventServiceInterface {
     EventModel save(EventModel eventModel);
 
-    String deleteEvent(int eid);
+    String deleteEvent(int eventId);
 
-    String updateEvent(Event event, int eid);
+    String updateEvent(Event event, int eventId);
 
-    EventModel get(int eid);
+    EventModel get(int eventId);
 }

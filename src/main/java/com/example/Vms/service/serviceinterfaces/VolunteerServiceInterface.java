@@ -7,28 +7,28 @@ import java.util.List;
 import java.util.Set;
 
 public interface VolunteerServiceInterface {
-    String add(int uid, int oid);
+    String add(int userId, int organisationId);
 
     List<OrganisationModel> totalOrganisations();
 
     List<OrganisationModel> findOrganisationByLoc(String location);
 
-    List<VolunteerModel> viewVolunteersInEvent(int eid, int oid);
+    List<VolunteerModel> viewVolunteersInEvent(int eventId, int organisationId);
 
-    Set<String> showMessages(int vid);
+    Set<String> showMessages(int volunteerId);
 
-    String CompleteEvent(int vid, int eid, int oid);
+    String CompleteEvent(int volunteerId, int eventId, int organisationId);
 
-    String leaveOrganisation(int vid);
+    String leaveOrganisation(int volunteerId);
 
-    List<EventModel> viewEventsRegistered(int vid);
+    List<EventModel> viewEventsRegistered(int volunteerId);
 
-    String sendMessageToOrganisation(int oid, int vid, String message);
+    String sendMessageToOrganisation(int organisationId, int volunteerId, String message);
 
-    List<EventModel> searchEventsBySkill(int oid, String skill);
+    List<EventModel> searchEventsBySkill(int organisationId, String skill);
 
     List<OrganisationModel> searchOrgByAddress(String address);
 
-    VolunteerModel get(int vid);
+    VolunteerModel get(int volunteerId);
     List<EventModel> eventsRegisteredByVolInOrg(int volunteerId,int organisationId);
 }

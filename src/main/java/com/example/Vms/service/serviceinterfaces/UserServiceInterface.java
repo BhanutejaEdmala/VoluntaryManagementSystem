@@ -8,17 +8,17 @@ import java.util.List;
 public interface UserServiceInterface {
     User save(UserModel user);
 
-    String deleteUser(int uid);
+    String deleteUser(int userId);
 
-    String updateUser(int uid, User user);
+    String updateUser(int userId, User user);
 
-    List<OrganisationModel> registeredOrganisations(int uid);
+    List<OrganisationModel> registeredOrganisations(int userId);
 
-    String leaveOrgaisation(int oid, int uid);
+    String leaveOrgaisation(int organisationId, int userId);
 
-    Object viewCertifications(int uid);
+    Object viewCertifications(int userId);
 
-    String leaveEvent(int uid, int eid, int oid);
+    String leaveEvent(int userId, int eventId, int organisationId);
 
-    UserModel getUser(int uid);
+    UserModel getUser(int userId);
 }

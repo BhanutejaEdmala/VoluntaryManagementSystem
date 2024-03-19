@@ -9,29 +9,29 @@ import java.util.List;
 public interface OrganisationServiceInterface {
     OrganisationModel save(OrganisationModel organisation);
 
-    String addEvent(int oid, int eid);
+    String addEvent(int organisationId, int eventId);
 
-    String assignEvent(int vid, int eid, int oid);
+    String assignEvent(int voluteerId, int eventId, int organisationId);
 
-    List<EventModel> viewEventsInOrganisation(int oid);
+    List<EventModel> viewEventsInOrganisation(int organisationId);
 
-    String sendMessage(int vid, int oid, String message);
+    String sendMessage(int volunteerId, int organisationId, String message);
 
-    String groupMessage(int oid, String message);
+    String groupMessage(int organisationId, String message);
 
-    String suggestVolunteers(int eid, int oid);
+    String suggestVolunteers(int eventId, int organisationId);
 
-    String removeOrganization(int oid);
+    String removeOrganization(int organisationId);
 
-    String updateOrganisation(Organisation organisation, int oid);
+    String updateOrganisation(Organisation organisation, int organisationId);
 
-    String closeEventForOrg(int eid, int oid);
+    String closeEventForOrg(int eventId, int organisationId);
 
-    String removeVolunteer(int vid);
+    String removeVolunteer(int volunteerId);
 
-    List<String> viewMessagesOfVolunteers(int oid);
+    List<String> viewMessagesOfVolunteers(int organisationId);
 
-    OrganisationModel get(int oid);
+    OrganisationModel get(int organisationId);
     boolean timingsCompare(String[] newTimings,String[] existTimings);
      String closeEvent(int eventId);
 }
