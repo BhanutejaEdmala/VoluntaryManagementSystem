@@ -19,14 +19,10 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EventModel {
-    @NotEmpty(message = "name shouln't be empty")
     private String name;
-    @NotEmpty(message = "location shouldn't be empty")
     private String location;
-    @NotEmpty(message = "date shouldn't be empty")
     private String date;
     private String status="active";
-    @MyValid
     private Set<String> skills_good_to_have = new LinkedHashSet<>();
     private String timings;
     @JsonIgnore

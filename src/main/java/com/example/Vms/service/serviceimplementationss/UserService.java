@@ -47,7 +47,7 @@ EntityToModel entityToModel;
 
     public String deleteUser(int userId) {
         User user = userRepo.findById(userId).orElse(null);
-        if (user != null) {
+        if (null!=user) {
             // Retrieve related entities
             List<Volunteer> volunteers = volunteerRepo.findAll();
             List<Organisation> organisations = organisationRepo.findAll();
@@ -64,7 +64,7 @@ EntityToModel entityToModel;
 
     public String updateUser(int userId, User user) {
         User user1 = userRepo.findById(userId).orElse(null);
-        if (user1 != null) {
+        if (null!=user1) {
             user1.setName(user.getName());
             user1.setPassword(passwordEncoder.encode(user.getPassword()));
             user1.setAddress(user.getAddress());
@@ -84,7 +84,7 @@ EntityToModel entityToModel;
 
     public List<OrganisationModel> registeredOrganisations(int userId) {
         User user = userRepo.findById(userId).orElse(null);
-        if (user != null) {
+        if (null!=user) {
             return user.getOrganisations().stream().map(entityToModel::organisationToOrganisationModel).toList();
         }
         return null;
@@ -93,11 +93,11 @@ EntityToModel entityToModel;
     public String leaveOrgaisation(int organisationId, int userId) {
         Organisation organisation = organisationRepo.findById(organisationId).orElse(null);
         User user = userRepo.findById(userId).orElse(null);
-        if (organisation != null && user != null) {
+        if (null!=organisation && null!=user) {
             if (organisation.getUsers().contains(user)) {
                 List<Volunteer> volunteers = volunteerRepo.findAll();
                 Volunteer volunteer = volunteers.stream().filter(i -> i.getUser().equals(user) && i.getOrganisations().contains(organisation)).findFirst().orElse(null);
-                assert volunteer != null;
+                assert null!=volunteer ;
                 volunteerService.leaveOrganisation(volunteer.getVid());
                 organisation.getUsers().remove(user);
                 organisationRepo.save(organisation);
@@ -112,7 +112,7 @@ EntityToModel entityToModel;
 
     public Object viewCertifications(int userId) {
         User user = userRepo.findById(userId).orElse(null);
-        if (user != null) {
+        if (null!=user ) {
             List<String> certificates = user.getCertificates();
             if (!(CollectionUtils.isEmpty(certificates)))
                 return certificates;
@@ -124,10 +124,10 @@ EntityToModel entityToModel;
         User user = userRepo.findById(userId).orElse(null);
         Event event = eventRepo.findById(eventId).orElse(null);
         Organisation organisation = organisationRepo.findById(organisatonId).orElse(null);
-        if(user!=null&&event!=null&&organisation!=null){
+        if(null!=user&&null!=event&&null!=organisation){
             List<Volunteer> volunteers = volunteerRepo.findAll();
            Volunteer volunteer= volunteers.stream().filter(i->i.getUser().equals(user)&&i.getOrganisations().contains(organisation)).findFirst().orElse(null);
-           if(volunteer!=null&&volunteer.getEvents().contains(event)) {
+           if(null!=volunteer&&volunteer.getEvents().contains(event)) {
                volunteer.getEvents().remove(event);
                event.getVolunteerList().remove(volunteer);
                eventRepo.save(event);
@@ -140,7 +140,7 @@ EntityToModel entityToModel;
     }
     public UserModel getUser(int userId){
       User user = userRepo.findById(userId).orElse(null);
-      if(user!=null){
+      if(null!=user){
           return entityToModel.userEntityToModel(user);}
       return null;
     }

@@ -34,7 +34,7 @@ public class EventController {
     @GetMapping("/getevent")
     public ResponseEntity<?> get(@RequestParam int eventId){
         EventModel event = eventService.get(eventId);
-        if(event!=null)
+        if(null!=event)
             return new ResponseEntity<>(event,HttpStatus.FOUND);
         return new ResponseEntity<>("No Event Found",HttpStatus.NOT_FOUND);
     }

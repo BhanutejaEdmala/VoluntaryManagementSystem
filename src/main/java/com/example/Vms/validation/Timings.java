@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD,ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Timings {
-    public String message() default "timings should be given in format hh:mm to hh:mm";
+    public String message() default "timings should be given in format hh:mm AM/PM to hh:mm AM/PM";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

@@ -36,7 +36,7 @@ public class VmsApplication implements CommandLineRunner {
 	//		System.out.println(organisation.getClosedevents());
 //		String time1Str = "10:00 AM";
 //		String time2Str = "10:00 PM";
-//String [] x = "10:00 Am to 12:00 Am".split("to");
+//       String [] x = "10:00 Am to 12:00 Am".split("to");
 //		System.out.println(Arrays.toString(x));
 //		// Define the format for parsing the time
 //		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a");
@@ -54,6 +54,6 @@ public class VmsApplication implements CommandLineRunner {
 //		} else {
 //			System.out.println(time1Str + " is equal to " + time2Str);
 //		List<Event> events =
-		System.out.println(volunteerRepo.findEventsByVolunteerAndOrganisation(2,2));
+//		System.out.println(volunteerRepo.findEventsByVolunteerAndOrganisation(2,2));
 		}
 	}

@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,26 +33,26 @@ public class OrganisationController {
 @PatchMapping("/assignevent")
     public ResponseEntity<?> assignEvent(@RequestParam int volunteerId,@RequestParam int eventId,@RequestParam int organisationId){
     String result = organisationService.assignEvent(volunteerId,eventId,organisationId);
-    if(result!=null)
+    if(null!=result)
         return new ResponseEntity<>(result,HttpStatus.CREATED);
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Check Whether The Details Are Exist In The First Place");
 }
 @GetMapping("/vieweventsinorg")
     public ResponseEntity<?> viewEventsInOrg(@RequestParam int organisationI){
     List<EventModel> eventList = organisationService.viewEventsInOrganisation(organisationI);
-    if(!(eventList.isEmpty()))
+    if(!(CollectionUtils.isEmpty(eventList)))
         return new ResponseEntity<>(eventList,HttpStatus.FOUND);
     return new ResponseEntity<>("No Organisation Found",HttpStatus.NOT_FOUND);
 }
 @PatchMapping("/sendmessage")
-    public ResponseEntity<?> sendMessage(@RequestParam int volunteerId,@RequestParam int organisationId,@RequestParam String message){
+    public ResponseEntity<?> sendMessageToVolunteer(@RequestParam int volunteerId,@RequestParam int organisationId,@RequestParam String message){
     String result = organisationService.sendMessage(volunteerId,organisationId,message);
-     if(result!=null)
+     if(null!=result)
          return new ResponseEntity<>(result,HttpStatus.ACCEPTED);
      return new ResponseEntity<>("Check For The Existence Of The Details You Are Trying To Access ",HttpStatus.NOT_FOUND);
 }
 @PatchMapping("/groupmessage")
-    public ResponseEntity<?> groupMessage(@RequestParam  int organisationId,@RequestParam String message){
+    public ResponseEntity<?> groupMessageToAll(@RequestParam  int organisationId,@RequestParam String message){
    String result= organisationService.groupMessage(organisationId,message);
     return ResponseEntity.ok(result);
 }
@@ -68,7 +69,7 @@ public class OrganisationController {
 @GetMapping("/viewmessages")
     public ResponseEntity<?> viewMessages(int organisationId){
   List<String> messages =  organisationService.viewMessagesOfVolunteers(organisationId);
-  if(messages!=null)
+  if(null!=messages)
       return ResponseEntity.ok(messages);
   return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No Messages Found");
 }
@@ -88,14 +89,14 @@ public ResponseEntity<?> closeevent(@RequestParam int eventId){
      return new ResponseEntity<>(result,HttpStatus.OK);
 }
 @GetMapping("/getorg")
-    public ResponseEntity<?> get(@RequestParam int organisationId){
+    public ResponseEntity<?> getOrganisation(@RequestParam int organisationId){
     OrganisationModel organisation = organisationService.get(organisationId);
-    if(organisation!=null)
+    if(null!=organisation)
         return new ResponseEntity<>(organisation,HttpStatus.FOUND);
     return new ResponseEntity<>("No Organisation Found",HttpStatus.NOT_FOUND);
 }
 @PatchMapping("/closeeventfororg")
-    public ResponseEntity<?> closeEvent(@RequestParam int eventId,@RequestParam int organisationId){
+    public ResponseEntity<?> closeEventForAnOrganisation(@RequestParam int eventId,@RequestParam int organisationId){
     String result = organisationService.closeEventForOrg(eventId,organisationId);
     return new ResponseEntity<>(result,HttpStatus.OK);
     }

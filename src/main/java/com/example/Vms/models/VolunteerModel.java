@@ -2,7 +2,6 @@ package com.example.Vms.models;
 
 import com.example.Vms.entities.Event;
 import com.example.Vms.entities.Organisation;
-import com.example.Vms.entities.Volunteer;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

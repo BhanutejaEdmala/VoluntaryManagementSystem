@@ -48,7 +48,7 @@ public class OrganisationService implements OrganisationServiceInterface {
     if(organisationRepo.existsById(organisationId)&&eventRepo.existsById(eventId)){
         Organisation organisation = organisationRepo.findById(organisationId).orElse(null);
         Event event = eventRepo.findById(eventId).orElse(null);
-        if(organisation!=null&&event!=null&&!(organisation.getEvents().contains(event))&&event.getStatus().equals("active")){
+        if(null!=organisation&&null!=event&&!(organisation.getEvents().contains(event))&&event.getStatus().equals("active")){
             event.getOrganisations().add(organisation);
             organisation.getEvents().add(event);
             organisationRepo.save(organisation);
@@ -64,10 +64,10 @@ public String assignEvent(int volunteerId,int eventId,int organisationId){
             Organisation organisation = organisationRepo.findById(organisationId).orElse(null);
             Volunteer volunteer = volunteerRepo.findById(volunteerId).orElse(null);
             List<Event> events = new ArrayList<>();
-             if(volunteer!=null)
+             if(null!=volunteer)
                 events = volunteer.getEvents();
              if(events.stream().anyMatch(event1 -> {
-                if(event!=null)
+                if(null!=event)
                     if(event1.getDate().equals(event.getDate())){
                 String[] existTimings = event1.getTimings().split("to");
                 String[] newTimings= event.getTimings().split("to");
@@ -75,7 +75,7 @@ public String assignEvent(int volunteerId,int eventId,int organisationId){
                 return false;
             })){
                 return "Volunteer Already Assigned To Another Event During The Timings Of This Event";}
-            if(volunteer!=null&&volunteer.getOrganisations().contains(organisation)&&organisation!=null&&organisation.getEvents().contains(event)&&event!=null){
+            if(null!=volunteer&&volunteer.getOrganisations().contains(organisation)&&null!=organisation&&organisation.getEvents().contains(event)&&null!=event){
                 if(!(event.getStatus().equals("active"))||organisation.getClosedevents().contains(eventId))
                     return "This Event Is Closed";
                 event.getVolunteerList().add(volunteer);
@@ -90,7 +90,7 @@ public String assignEvent(int volunteerId,int eventId,int organisationId){
 public List<EventModel> viewEventsInOrganisation(int organisationId){
        if(organisationRepo.existsById(organisationId)){
            Organisation organisation = organisationRepo.findById(organisationId).orElse(null);
-           if(organisation!=null&&CollectionUtils.isEmpty(organisation.getEvents()))
+           if(null!=organisation&&CollectionUtils.isEmpty(organisation.getEvents()))
                 return new ArrayList<>();
            return organisation!=null?organisation.getEvents().stream().filter(i->!(i.getStatus().equals("closed"))).map(entityToModel::eventToEventModel).toList():null;
        }
@@ -100,11 +100,11 @@ public String sendMessage(int volunteerId, int organisationId, String message){
         if(volunteerRepo.existsById(volunteerId)&&organisationRepo.existsById(organisationId)){
             Volunteer volunteer = volunteerRepo.findById(volunteerId).orElse(null);
             Organisation organisation = organisationRepo.findById(organisationId).orElse(null);
-            if(volunteer!=null&&volunteer.getOrganisations().contains(organisation)){
+            if(null!=volunteer&&volunteer.getOrganisations().contains(organisation)){
                 LocalDateTime currentDateTime = LocalDateTime.now();
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm yyyy-MM-dd");
                 String formattedDateTime = currentDateTime.format(formatter);
-                if(volunteer.getMessages()==null)
+                if(null==volunteer.getMessages())
                     volunteer.setMessages(new LinkedHashSet<>());
               // LinkedHashSet<String> messages = new LinkedHashSet<>();
                 volunteer.getMessages().add(message+" "+formattedDateTime);
@@ -117,7 +117,7 @@ public String sendMessage(int volunteerId, int organisationId, String message){
     public String groupMessage(int organisationId, String message) {
         if (organisationRepo.existsById(organisationId)) {
             Organisation organisation = organisationRepo.findById(organisationId).orElse(null);
-            if (organisation != null) {
+            if (null!=organisation) {
                 Set<Volunteer> volunteers = new HashSet<>(organisation.getVolunteers()); // Create a copy of the set
                 LocalDateTime currentDateTime = LocalDateTime.now();
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm yyyy-MM-dd");
@@ -136,19 +136,23 @@ public String sendMessage(int volunteerId, int organisationId, String message){
         if(eventRepo.existsById(eventId)&&organisationRepo.existsById(organisationId)){
            Event event = eventRepo.findById(eventId).orElse(null);
            Organisation organisation = organisationRepo.findById(organisationId).orElse(null);
-           if(event!=null&&organisation!=null&&organisation.getEvents().contains(event)){
+           if(null!=event&&null!=organisation&&organisation.getEvents().contains(event)){
                Set<String> skills = event.getSkills_good_to_have();
                List<Volunteer> volunteers = new ArrayList<>(organisation.getVolunteers());
                LocalDateTime currentDateTime = LocalDateTime.now();
                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm yyyy-MM-dd");
                String formattedDateTime = currentDateTime.format(formatter);
                String message = "You Are Very Much Suited For This Event"+" '"+event.getName()+"', time received:"+formattedDateTime;
+               if(volunteers.stream().anyMatch(i->CollectionUtils.containsAny(skills,i.getSkills()))){
                for (Volunteer volunteer : volunteers) {
                    if(CollectionUtils.containsAny(skills,volunteer.getSkills())){
-                   volunteer.getMessages().add(message);}
+                             volunteer.getMessages().add(message);}
                    volunteerRepo.save(volunteer);
                }
-               return "Sent To All Matching Volunteers";
+               return "Sent To All Matching Volunteers";}
+               else{
+                   return "There Are No Suitable Volunteers";
+               }
            }
            return "No Such Event Found In This Organisation";
         }
@@ -157,7 +161,7 @@ public String sendMessage(int volunteerId, int organisationId, String message){
     @Transactional
     public String removeOrganization(int organisationId) {
         Organisation organisation = organisationRepo.findById(organisationId).orElse(null);
-        if (organisation != null) {
+        if (null!=organisation) {
             // Retrieve related entities
             List<Volunteer> volunteers = new ArrayList<>(organisation.getVolunteers());
             List<Event> events = organisation.getEvents();
@@ -181,12 +185,12 @@ public String sendMessage(int volunteerId, int organisationId, String message){
     }
     public String updateOrganisation(Organisation organisation,int organisationId){
         Organisation organisation1 = organisationRepo.findById(organisationId).orElse(null);
-        if(organisation1!=null){
+        if(null!=organisation1){
             organisation1.setName(organisation.getName());
              organisation1.setAddress(organisation.getAddress());
             organisation1.setMobile(organisation.getMobile());
            organisationRepo.save(organisation1);
-           return "Updated";
+           return "Organisation Updated";
         }
         return "organisation doesn't exist";
     }
@@ -194,7 +198,7 @@ public String sendMessage(int volunteerId, int organisationId, String message){
         Event event = eventRepo.findById(eventId).orElse(null);
         Organisation organisation = organisationRepo.findById(organisationID).orElse(null);
         List<Integer> events = new ArrayList<>();;
-        if(event!=null&&organisation!=null) {
+        if(null!=event&&null!=organisation) {
             List<Volunteer> volunteers = event.getVolunteerList();
             if(!(organisation.getEvents().contains(event)))
                 return "No Such Event Found In This Organisation";
@@ -218,12 +222,12 @@ public String sendMessage(int volunteerId, int organisationId, String message){
             }
             return "Event Closed";
         }
-        return "No Data Found";
+        return "Check The Details You've Entered";
     }
     @Transactional
     public String removeVolunteer(int volunteerId) {
         Volunteer volunteer = volunteerRepo.findById(volunteerId).orElse(null);
-        if (volunteer != null) {
+        if (null!=volunteer) {
             List<Organisation> organisations = organisationRepo.findAll();
             List<Event> events = eventRepo.findAll();
             User user = volunteer.getUser();
@@ -249,11 +253,11 @@ public String sendMessage(int volunteerId, int organisationId, String message){
     }
     public OrganisationModel get(int organisationId){
         Organisation organisation = organisationRepo.findById(organisationId).orElse(null);
-        return organisation!=null ? entityToModel.organisationToOrganisationModel(organisation):null;
+        return null!=organisation ? entityToModel.organisationToOrganisationModel(organisation):null;
     }
     public String closeEvent(int eventId){
         Event event = eventRepo.findById(eventId).orElse(null);
-        if(event!=null){
+        if(null!=event){
             List<Volunteer> volunteers = new ArrayList<>();
             volunteers = event.getVolunteerList();
             volunteers.forEach(volunteer ->  volunteer.getEvents().remove(event));

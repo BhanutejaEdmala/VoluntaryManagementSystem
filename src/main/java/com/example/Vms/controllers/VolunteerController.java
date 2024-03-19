@@ -13,6 +13,7 @@ import com.example.Vms.service.serviceinterfaces.VolunteerServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -49,14 +50,14 @@ return  new ResponseEntity<>(organisations,HttpStatus.FOUND);
     @GetMapping("/viewvolunteersinevent")
     public ResponseEntity<?> viewVolInEvent(@RequestParam int eventId,@RequestParam int organisationID){
        List<VolunteerModel> volunteers = volunteerService.viewVolunteersInEvent(eventId,organisationID);
-       if(volunteers==null)
+       if(null==volunteers)
            return  new ResponseEntity<>("No Data Found",HttpStatus.NOT_FOUND);
        return new ResponseEntity<>(volunteers,HttpStatus.FOUND);
     }
     @GetMapping("/viewmessages")
     public ResponseEntity<?> viewMessage(int volunteerId){
        Set<String> result = volunteerService.showMessages(volunteerId);
-       if(result!=null)
+       if(null!=result)
             return new ResponseEntity<>(result,HttpStatus.CREATED);
        return new ResponseEntity<>("No Volunteer Found",HttpStatus.NOT_FOUND);
     }
@@ -68,29 +69,28 @@ return  new ResponseEntity<>(organisations,HttpStatus.FOUND);
     @PatchMapping("/sendmessage")
     public ResponseEntity<?> sendMessage(@RequestParam int organisationId, @RequestParam int volunteerId,@RequestParam String message){
        String result = volunteerService.sendMessageToOrganisation(organisationId,volunteerId,message);
-       if(result!=null)
+       if(null!=result)
            return ResponseEntity.ok(result);
        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
     @GetMapping("/search")
     public ResponseEntity<?> searchEventsBySkill(@RequestParam int organisationId,@RequestParam String skill){
-        System.out.println("hi");
        List<EventModel> events = volunteerService.searchEventsBySkill(organisationId,skill);
-       if(!(events.isEmpty()))
+       if(!(CollectionUtils.isEmpty(events)))
            return new ResponseEntity<>(events,HttpStatus.FOUND);
        return new ResponseEntity<>("No Events Found",HttpStatus.NOT_FOUND);
     }
     @GetMapping("/getorgbyaddress")
     public ResponseEntity<?> searchOrgByAddress(@RequestParam String address){
        List<OrganisationModel> organisations = volunteerService.searchOrgByAddress(address);
-       if(organisations!=null)
+       if(null!=organisations)
            return new ResponseEntity<>(organisations,HttpStatus.FOUND);
        return new ResponseEntity<>("No Organisation Found",HttpStatus.NOT_FOUND);
     }
     @GetMapping("/regevents")
     public ResponseEntity<?> registeredEvents(@RequestParam int volunteerId){
        List<EventModel> events = volunteerService.viewEventsRegistered(volunteerId);
-       if(events!=null)
+       if(null!=events)
            return new ResponseEntity<>(events,HttpStatus.FOUND);
        return new ResponseEntity<>("You Are Yet To Register In Any Event",HttpStatus.NOT_FOUND);
     }
@@ -102,14 +102,14 @@ return  new ResponseEntity<>(organisations,HttpStatus.FOUND);
     @GetMapping("/getvolunteer")
     public ResponseEntity<?> get(@RequestParam int volunteerId){
         VolunteerModel volunteer = volunteerService.get(volunteerId);
-        if(volunteer!=null)
+        if(null!=volunteer)
             return new ResponseEntity<>(volunteer,HttpStatus.FOUND);
         return new ResponseEntity<>("No Volunteer Found",HttpStatus.NOT_FOUND);
     }
     @GetMapping("/eventsregisteredinorganisation")
     public ResponseEntity<?> eventsInAParticulatOrg(@RequestParam int volunteerId,@RequestParam int organisationId){
        List<EventModel> eventModels = volunteerService.eventsRegisteredByVolInOrg(volunteerId,organisationId);
-       if(eventModels!=null){
+       if(null!=eventModels){
            return  new ResponseEntity<>(eventModels,HttpStatus.OK);
        }
        return new ResponseEntity<>("Check The Details You've Entered",HttpStatus.NOT_FOUND);

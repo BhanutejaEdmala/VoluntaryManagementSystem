@@ -35,7 +35,7 @@ public class UserController {
     @GetMapping("/regorganisations")
     public ResponseEntity<?> registeredOrganisations(@RequestParam int userId){
       List<OrganisationModel> organisations =  userService.registeredOrganisations(userId);
-      if(organisations!=null)
+      if(null!=organisations)
           return new ResponseEntity<>(organisations, HttpStatus.FOUND);
       return new ResponseEntity<>("You Haven't Registered In Any Organisation",HttpStatus.FOUND);
     }
@@ -46,14 +46,14 @@ public class UserController {
     }
     @GetMapping("/viewcertificates")
     public ResponseEntity<?> viewCertificates(@RequestParam int userId) {
-        if (userService.viewCertifications(userId) != null)
+        if (null!=userService.viewCertifications(userId))
             return new ResponseEntity<>(userService.viewCertifications(userId).toString(), HttpStatus.FOUND);
         return new ResponseEntity<>("No Data Found", HttpStatus.NOT_FOUND);
     }
     @GetMapping("/getuser")
     public ResponseEntity<?> getUser(@RequestParam int userId){
         UserModel user = userService.getUser(userId);
-        if(user!=null)
+        if(null!=user)
             return new ResponseEntity<>(user,HttpStatus.FOUND);
         return new ResponseEntity<>("No User Found",HttpStatus.NOT_FOUND);
     }

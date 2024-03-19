@@ -35,7 +35,7 @@ public class EventService implements EventServiceInterface {
     }
     public String deleteEvent(int eventId){
         Event event = eventRepo.findById(eventId).orElse(null);
-        if(event!=null){
+        if(null!=event){
             List<Organisation> organisations = organisationRepo.findAll();
             List<Volunteer> volunteers = volunteerRepo.findAll();
             volunteers.stream().filter(i->i.getEvents().contains(event)).forEach(i->i.getEvents().remove(event));
@@ -51,7 +51,7 @@ public class EventService implements EventServiceInterface {
         Event event1 = eventRepo.findById(eventId).orElse(null);
         if(event1!=null&&!(CollectionUtils.isEmpty(event1.getVolunteerList())))
              return "This Event Is Already Assigned To Few Volunteers , Updating It Might Lead To Confusion";
-        if(event1!=null){
+        if(null!=event1){
            event1.setName(event.getName());
            event1.setDate(event.getDate());
            event1.setLocation(event.getLocation());
@@ -65,6 +65,6 @@ public class EventService implements EventServiceInterface {
     }
     public EventModel get(int eventId){
         Event event = eventRepo.findById(eventId).orElse(null);
-        return event!=null ? entityToModel.eventToEventModel(event) : null;
+        return null!=event ? entityToModel.eventToEventModel(event) : null;
     }
 }

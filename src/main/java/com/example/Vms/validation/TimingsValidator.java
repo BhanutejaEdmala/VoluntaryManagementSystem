@@ -10,6 +10,8 @@ public class TimingsValidator implements ConstraintValidator<Timings,String> {
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
         try{
+            if(!(value.contains("to")))
+                throw new RuntimeException();
             String[] timings =value.split("to");
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a");
             LocalTime startTime=  LocalTime.parse(timings[0].strip(),formatter);
