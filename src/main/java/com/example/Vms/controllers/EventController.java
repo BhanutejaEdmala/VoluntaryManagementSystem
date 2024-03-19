@@ -3,6 +3,7 @@ package com.example.Vms.controllers;
 import com.example.Vms.entities.Event;
 import com.example.Vms.models.EventModel;
 import com.example.Vms.service.serviceimplementationss.EventService;
+import com.example.Vms.service.serviceinterfaces.EventServiceInterface;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/event")
 public class EventController {
     @Autowired
-    EventService eventService;
+    EventServiceInterface eventService;
     @PostMapping("/saveevent")
     public ResponseEntity<?> save(@RequestBody @Valid EventModel eventModel){
         System.out.println(eventModel);

@@ -5,6 +5,7 @@ import com.example.Vms.entities.Organisation;
 import com.example.Vms.models.EventModel;
 import com.example.Vms.models.OrganisationModel;
 import com.example.Vms.service.serviceimplementationss.OrganisationService;
+import com.example.Vms.service.serviceinterfaces.OrganisationServiceInterface;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,7 +18,7 @@ import java.util.List;
 @RequestMapping("/org")
 public class OrganisationController {
     @Autowired
-    OrganisationService organisationService;
+    OrganisationServiceInterface organisationService;
 @PostMapping("/saveorg")
     public ResponseEntity<?> add(@RequestBody @Valid OrganisationModel organisation){
     OrganisationModel organisationModel=organisationService.save(organisation);
@@ -70,6 +71,11 @@ public class OrganisationController {
   if(messages!=null)
       return ResponseEntity.ok(messages);
   return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No Messages Found");
+}
+@PatchMapping("/updateorg")
+public ResponseEntity<?> updateOrganisation(Organisation organisation,int organisationId){
+    String result=organisationService.updateOrganisation(organisation,organisationId);
+    return new ResponseEntity<>(result,HttpStatus.OK);
 }
 @PatchMapping("/closeevent")
 public ResponseEntity<?> closeevent(@RequestParam int eventId){

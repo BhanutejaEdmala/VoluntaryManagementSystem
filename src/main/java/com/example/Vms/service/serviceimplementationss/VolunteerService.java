@@ -17,6 +17,8 @@ import jakarta.transaction.Transactional;
 import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -175,7 +177,7 @@ public class VolunteerService implements VolunteerServiceInterface {
  }
  public List<OrganisationModel> searchOrgByAddress(String address){
        List<OrganisationModel> organisations=  organisationRepo.findAll().stream().filter(i->i.getAddress().equals(address)).map(entityToModel::organisationToOrganisationModel).toList();
-       if(!(organisations.isEmpty()))
+       if(!(CollectionUtils.isEmpty(organisations)))
            return organisations;
        return null;
  }

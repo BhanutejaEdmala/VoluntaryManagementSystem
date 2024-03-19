@@ -90,8 +90,8 @@ public String assignEvent(int volunteerId,int eventId,int organisationId){
 public List<EventModel> viewEventsInOrganisation(int organisationId){
        if(organisationRepo.existsById(organisationId)){
            Organisation organisation = organisationRepo.findById(organisationId).orElse(null);
-           if(organisation!=null&&organisation.getEvents().isEmpty())
-               return new ArrayList<>();
+           if(organisation!=null&&CollectionUtils.isEmpty(organisation.getEvents()))
+                return new ArrayList<>();
            return organisation!=null?organisation.getEvents().stream().filter(i->!(i.getStatus().equals("closed"))).map(entityToModel::eventToEventModel).toList():null;
        }
 return  null;
@@ -205,7 +205,7 @@ public String sendMessage(int volunteerId, int organisationId, String message){
                 events.add(eventId);
                 organisation.setClosedevents(events);
             }
-            if(!(volunteers.isEmpty())){
+            if(!(CollectionUtils.isEmpty(volunteers))){
                 List<Volunteer> volunteersToRemove = new ArrayList<>(volunteers);
                 for (Volunteer volunteer : volunteersToRemove) {
                     int uid = volunteer.getUser().getUid();

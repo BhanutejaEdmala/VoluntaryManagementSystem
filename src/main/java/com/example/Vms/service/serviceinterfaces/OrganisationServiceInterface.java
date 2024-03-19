@@ -1,6 +1,5 @@
 package com.example.Vms.service.serviceinterfaces;
 
-import com.example.Vms.entities.Event;
 import com.example.Vms.entities.Organisation;
 import com.example.Vms.models.EventModel;
 import com.example.Vms.models.OrganisationModel;
@@ -34,4 +33,5 @@ public interface OrganisationServiceInterface {
 
     OrganisationModel get(int oid);
     boolean timingsCompare(String[] newTimings,String[] existTimings);
+     String closeEvent(int eventId);
 }

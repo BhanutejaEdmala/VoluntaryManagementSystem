@@ -5,6 +5,7 @@ import com.example.Vms.entities.User;
 import com.example.Vms.models.OrganisationModel;
 import com.example.Vms.models.UserModel;
 import com.example.Vms.service.serviceimplementationss.UserService;
+import com.example.Vms.service.serviceinterfaces.UserServiceInterface;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,7 +17,7 @@ import java.util.List;
 @RequestMapping("/user")
 public class UserController {
     @Autowired
-    UserService userService;
+    UserServiceInterface userService;
     @PostMapping("/add")
     public User addUser(@RequestBody @Valid UserModel user){
         return userService.save(user);

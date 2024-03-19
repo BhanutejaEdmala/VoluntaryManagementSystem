@@ -1,6 +1,4 @@
 package com.example.Vms.service.serviceinterfaces;
-
-import com.example.Vms.entities.Organisation;
 import com.example.Vms.entities.User;
 import com.example.Vms.models.OrganisationModel;
 import com.example.Vms.models.UserModel;

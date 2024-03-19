@@ -16,6 +16,7 @@ import com.example.Vms.service.serviceinterfaces.UserServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 
@@ -113,7 +114,7 @@ EntityToModel entityToModel;
         User user = userRepo.findById(userId).orElse(null);
         if (user != null) {
             List<String> certificates = user.getCertificates();
-            if (!(certificates .isEmpty()))
+            if (!(CollectionUtils.isEmpty(certificates)))
                 return certificates;
             return "You Are Yet To Receive A Certificate";
         }

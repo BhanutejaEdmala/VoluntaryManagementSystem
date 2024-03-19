@@ -1,8 +1,4 @@
 package com.example.Vms.service.serviceinterfaces;
-
-import com.example.Vms.entities.Event;
-import com.example.Vms.entities.Organisation;
-import com.example.Vms.entities.Volunteer;
 import com.example.Vms.models.EventModel;
 import com.example.Vms.models.OrganisationModel;
 import com.example.Vms.models.VolunteerModel;
@@ -34,5 +30,5 @@ public interface VolunteerServiceInterface {
     List<OrganisationModel> searchOrgByAddress(String address);
 
     VolunteerModel get(int vid);
-    public List<EventModel> eventsRegisteredByVolInOrg(int volunteerId,int organisationId);
+    List<EventModel> eventsRegisteredByVolInOrg(int volunteerId,int organisationId);
 }

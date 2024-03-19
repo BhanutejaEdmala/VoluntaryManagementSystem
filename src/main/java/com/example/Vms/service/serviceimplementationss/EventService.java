@@ -12,6 +12,7 @@ import com.example.Vms.repositories.VolunteerRepo;
 import com.example.Vms.service.serviceinterfaces.EventServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 
@@ -48,7 +49,7 @@ public class EventService implements EventServiceInterface {
     }
     public String updateEvent(Event event,int eventId){
         Event event1 = eventRepo.findById(eventId).orElse(null);
-        if(event1!=null&&!(event1.getVolunteerList().isEmpty()))
+        if(event1!=null&&!(CollectionUtils.isEmpty(event1.getVolunteerList())))
              return "This Event Is Already Assigned To Few Volunteers , Updating It Might Lead To Confusion";
         if(event1!=null){
            event1.setName(event.getName());

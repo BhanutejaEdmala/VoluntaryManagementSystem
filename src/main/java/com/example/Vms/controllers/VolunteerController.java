@@ -8,6 +8,8 @@ import com.example.Vms.models.OrganisationModel;
 import com.example.Vms.models.VolunteerModel;
 import com.example.Vms.service.serviceimplementationss.UserService;
 import com.example.Vms.service.serviceimplementationss.VolunteerService;
+import com.example.Vms.service.serviceinterfaces.UserServiceInterface;
+import com.example.Vms.service.serviceinterfaces.VolunteerServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,9 +22,9 @@ import java.util.Set;
 @RequestMapping("/vol")
 public class VolunteerController {
     @Autowired
-    VolunteerService volunteerService;
+    VolunteerServiceInterface volunteerService;
     @Autowired
-    UserService  userService;
+    UserServiceInterface userService;
    @PatchMapping("/add")
     public ResponseEntity<?> add(@RequestParam int userId, @RequestParam int organisationId){
        String result = volunteerService.add(userId,organisationId);
