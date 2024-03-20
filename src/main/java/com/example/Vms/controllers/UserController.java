@@ -1,10 +1,8 @@
 package com.example.Vms.controllers;
 
-import com.example.Vms.entities.Organisation;
 import com.example.Vms.entities.User;
 import com.example.Vms.models.OrganisationModel;
 import com.example.Vms.models.UserModel;
-import com.example.Vms.service.serviceimplementationss.UserService;
 import com.example.Vms.service.serviceinterfaces.UserServiceInterface;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

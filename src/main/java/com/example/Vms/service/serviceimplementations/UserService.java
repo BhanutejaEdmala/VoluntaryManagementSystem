@@ -1,4 +1,4 @@
-package com.example.Vms.service.serviceimplementationss;
+package com.example.Vms.service.serviceimplementations;
 
 import com.example.Vms.conversions.EntityToModel;
 import com.example.Vms.conversions.ModelToEntity;

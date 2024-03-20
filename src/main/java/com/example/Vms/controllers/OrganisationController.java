@@ -1,10 +1,8 @@
 package com.example.Vms.controllers;
 
-import com.example.Vms.entities.Event;
 import com.example.Vms.entities.Organisation;
 import com.example.Vms.models.EventModel;
 import com.example.Vms.models.OrganisationModel;
-import com.example.Vms.service.serviceimplementationss.OrganisationService;
 import com.example.Vms.service.serviceinterfaces.OrganisationServiceInterface;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

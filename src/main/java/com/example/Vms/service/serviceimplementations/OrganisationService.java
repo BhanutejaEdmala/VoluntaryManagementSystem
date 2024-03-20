@@ -1,4 +1,4 @@
-package com.example.Vms.service.serviceimplementationss;
+package com.example.Vms.service.serviceimplementations;
 
 import com.example.Vms.conversions.EntityToModel;
 import com.example.Vms.conversions.ModelToEntity;
@@ -156,7 +156,7 @@ public String sendMessage(int volunteerId, int organisationId, String message){
            }
            return "No Such Event Found In This Organisation";
         }
-        return "No Data Found";
+        return "Check The Details You've Entered";
     }
     @Transactional
     public String removeOrganization(int organisationId) {

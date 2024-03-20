@@ -2,8 +2,6 @@ package com.example.Vms.validation;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 public class DateValidator implements ConstraintValidator<Date,String> {

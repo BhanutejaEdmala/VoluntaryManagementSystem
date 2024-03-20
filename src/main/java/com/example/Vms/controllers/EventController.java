@@ -2,7 +2,6 @@ package com.example.Vms.controllers;
 
 import com.example.Vms.entities.Event;
 import com.example.Vms.models.EventModel;
-import com.example.Vms.service.serviceimplementationss.EventService;
 import com.example.Vms.service.serviceinterfaces.EventServiceInterface;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +32,7 @@ public class EventController {
     }
     @GetMapping("/getevent")
     public ResponseEntity<?> get(@RequestParam int eventId){
-        EventModel event = eventService.get(eventId);
+        EventModel event = eventService.getEvent(eventId);
         if(null!=event)
             return new ResponseEntity<>(event,HttpStatus.FOUND);
         return new ResponseEntity<>("No Event Found",HttpStatus.NOT_FOUND);

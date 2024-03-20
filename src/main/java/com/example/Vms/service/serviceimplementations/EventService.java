@@ -1,4 +1,4 @@
-package com.example.Vms.service.serviceimplementationss;
+package com.example.Vms.service.serviceimplementations;
 
 import com.example.Vms.conversions.EntityToModel;
 import com.example.Vms.conversions.ModelToEntity;
@@ -63,7 +63,7 @@ public class EventService implements EventServiceInterface {
         }
         return null;
     }
-    public EventModel get(int eventId){
+    public EventModel getEvent(int eventId){
         Event event = eventRepo.findById(eventId).orElse(null);
         return null!=event ? entityToModel.eventToEventModel(event) : null;
     }

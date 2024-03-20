@@ -1,4 +1,4 @@
-package com.example.Vms.service.serviceimplementationss;
+package com.example.Vms.service.serviceimplementations;
 
 import com.example.Vms.conversions.EntityToModel;
 import com.example.Vms.entities.Event;
@@ -14,7 +14,6 @@ import com.example.Vms.repositories.OrganisationRepo;
 import com.example.Vms.repositories.VolunteerRepo;
 import com.example.Vms.service.serviceinterfaces.VolunteerServiceInterface;
 import jakarta.transaction.Transactional;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -58,7 +57,7 @@ public class VolunteerService implements VolunteerServiceInterface {
            else
                return "you already registered as a volunteer in this organisaton";
        }
-       return "Invalid Data";
+       return "Check The Data You've Entered";
     }
    public List<OrganisationModel> totalOrganisations()
    {
@@ -108,7 +107,7 @@ public class VolunteerService implements VolunteerServiceInterface {
                }
                return "This Event Doesn't Exist In This Organisation";
         }
-        return  "Data Not Found";
+        return  "Check The Data You've Entered";
    }
    @Transactional
     public String leaveOrganisation(int volunteerId) {
@@ -117,34 +116,25 @@ public class VolunteerService implements VolunteerServiceInterface {
             List<Organisation> organisations = organisationRepo.findAll();
             List<Event> events = eventRepo.findAll();
             User user = volunteer.getUser();
-
             // Remove volunteer from events
             events.stream().filter(i->i.getVolunteerList().contains(volunteer)).forEach(event -> event.getVolunteerList().remove(volunteer));
-
             // Remove volunteer from organisations
             organisations.stream().filter(i->i.getVolunteers().contains(volunteer)).forEach(organisation -> organisation.getVolunteers().remove(volunteer));
-
             // Remove volunteer from user
             user.getVolunteers().remove(volunteer);
-
             // Save changes
             eventRepo.saveAll(events);
             organisationRepo.saveAll(organisations);
             userRepo.save(user);
-
             // Delete the volunteer from the repository
             volunteerRepo.delete(volunteer);
-
             return "Successfully left";
         }
         return "Volunteer Doesn't Exist";
     }
  public List<EventModel> viewEventsRegistered(int volunteerId){
         Volunteer volunteer = volunteerRepo.findById(volunteerId).orElse(null);
-        if(null!=volunteer){
-            return volunteer.getEvents().stream().filter(i->i.getStatus().equals("active")).distinct().map(entityToModel::eventToEventModel).toList();
-        }
-        return null;
+            return null!=volunteer ?volunteer.getEvents().stream().filter(i->i.getStatus().equals("active")).distinct().map(entityToModel::eventToEventModel).toList():null;
  }
  public String sendMessageToOrganisation(int organisationId,int volunteerId,String message){
         Organisation organisation = organisationRepo.findById(organisationId).orElse(null);
@@ -165,7 +155,7 @@ public class VolunteerService implements VolunteerServiceInterface {
             organisationRepo.save(organisation);
             return "Sent";
         }
-        return "Data Invalid";
+        return "Check The Data You've Entered";
  }
  public List<EventModel> searchEventsBySkill(int organiationId,String skill){
         Organisation organisation = organisationRepo.findById(organiationId).orElse(null);

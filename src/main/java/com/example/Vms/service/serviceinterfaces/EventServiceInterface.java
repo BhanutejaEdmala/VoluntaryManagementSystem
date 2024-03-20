@@ -10,5 +10,5 @@ public interface EventServiceInterface {
 
     String updateEvent(Event event, int eventId);
 
-    EventModel get(int eventId);
+    EventModel getEvent(int eventId);
 }
