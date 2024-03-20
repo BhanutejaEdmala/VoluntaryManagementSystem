@@ -1,5 +1,4 @@
 package com.example.Vms.service.serviceimplementations;
-
 import com.example.Vms.conversions.EntityToModel;
 import com.example.Vms.entities.Event;
 import com.example.Vms.entities.Organisation;
@@ -17,7 +16,6 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -52,10 +50,10 @@ public class VolunteerService implements VolunteerServiceInterface {
                    organisation.getVolunteers().add(volunteer);
                    userRepo.save(user);
                    organisationRepo.save(organisation);
-               return "Registered Succesfully";
+               return "Registered Successfully";
            }
            else
-               return "you already registered as a volunteer in this organisaton";
+               return "you already registered as a volunteer in this organisation";
        }
        return "Check The Data You've Entered";
     }

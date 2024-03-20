@@ -274,12 +274,17 @@ public String sendMessage(int volunteerId, int organisationId, String message){
         LocalTime existEndTime = LocalTime.parse(existTimings[1].strip(),formatter);
         LocalTime newStartTime = LocalTime.parse(newTimings[0].strip(),formatter);
         LocalTime newEndTime = LocalTime.parse(newTimings[1].strip(),formatter);
+        if(newEndTime.equals(existStartTime))
+            return false;
+        if(newStartTime.compareTo(existEndTime)>0)
+            return false;
         if(!(newStartTime.isAfter(existStartTime) && !(newStartTime.isAfter(existEndTime))))
             return true;
         else if(newStartTime.equals(existStartTime))
             return true;
         else if(newStartTime.isBefore(existEndTime))
             return true;
-        return false;
+        else
+            return false;
     }
 }
