@@ -106,7 +106,6 @@ public String sendMessage(int volunteerId, int organisationId, String message){
                 String formattedDateTime = currentDateTime.format(formatter);
                 if(null==volunteer.getMessages())
                     volunteer.setMessages(new LinkedHashSet<>());
-              // LinkedHashSet<String> messages = new LinkedHashSet<>();
                 volunteer.getMessages().add(message+" "+formattedDateTime);
                          volunteerRepo.save(volunteer);
             return "Message Sent";}
@@ -276,13 +275,15 @@ public String sendMessage(int volunteerId, int organisationId, String message){
         LocalTime newEndTime = LocalTime.parse(newTimings[1].strip(),formatter);
         if(newEndTime.equals(existStartTime))
             return false;
-        if(newStartTime.compareTo(existEndTime)>0)
+        else if(newStartTime.compareTo(existEndTime)>0)
             return false;
-        if(!(newStartTime.isAfter(existStartTime) && !(newStartTime.isAfter(existEndTime))))
+        else if(newEndTime.isBefore(existStartTime))
+            return false;
+        else if(newStartTime.isAfter(existStartTime)&&newEndTime.isBefore(existEndTime))
+            return true;
+        else if(newStartTime.isBefore(existStartTime)&&(newEndTime.isAfter(existStartTime)&&newEndTime.isBefore(existEndTime)))
             return true;
         else if(newStartTime.equals(existStartTime))
-            return true;
-        else if(newStartTime.isBefore(existEndTime))
             return true;
         else
             return false;
