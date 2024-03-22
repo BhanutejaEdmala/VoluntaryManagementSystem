@@ -7,7 +7,7 @@ import com.example.Vms.models.OrganisationModel;
 import java.util.List;
 
 public interface OrganisationServiceInterface {
-   String save(OrganisationModel organisation,String userName,String Password);
+   String saveOrganisation(OrganisationModel organisation,String userName,String Password);
 
     String addEvent(String username,String password,int organisationId, int eventId);
 
@@ -29,7 +29,7 @@ public interface OrganisationServiceInterface {
 
     String removeVolunteer(String username,String password,int organisationId,int volunteerId);
 
-    List<String> viewMessagesOfVolunteers(String userName,String password,int organisationId);
+    List<String> viewMessagesFromVolunteers(String userName,String password,int organisationId);
 
     OrganisationModel getOrganisation(int organisationId);
     boolean timingsCompare(String[] newTimings,String[] existTimings);

@@ -28,13 +28,6 @@ public class VolunteerController {
            return new ResponseEntity<>(result, HttpStatus.CREATED);
        return new ResponseEntity<>(result,HttpStatus.NOT_FOUND);
     }
-    @GetMapping("/totalorg")
-    public ResponseEntity<?> totalOrganisations(){
-       List<OrganisationModel> organisationList = volunteerService.totalOrganisations();
-       if(!(organisationList.isEmpty()))
-         return new ResponseEntity<>(organisationList,HttpStatus.FOUND);
-       return new ResponseEntity<>("No Organisations Found",HttpStatus.NO_CONTENT);
-    }
     @GetMapping("/vieworgbyloc")
     public ResponseEntity<?> viewOrgByLoc(@RequestParam String location){
 List<OrganisationModel> organisations = volunteerService.findOrganisationByLoc(location);

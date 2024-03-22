@@ -17,11 +17,11 @@ public class EventController {
     @PostMapping("/saveevent")
     public ResponseEntity<?> save(@RequestBody @Valid EventModel eventModel){
         System.out.println(eventModel);
-        EventModel event =  eventService.save(eventModel);
+        EventModel event =  eventService.saveEvent(eventModel);
         return new ResponseEntity<>(event, HttpStatus.CREATED);
     }
     @DeleteMapping("/deleteevent")
-    public ResponseEntity<?> delete(@RequestParam int eventId){
+    public ResponseEntity<?> deleteEvent(@RequestParam int eventId){
         String result = eventService.deleteEvent(eventId);
         return ResponseEntity.ok(result);
     }
@@ -31,7 +31,7 @@ public class EventController {
         return ResponseEntity.ok(result);
     }
     @GetMapping("/getevent")
-    public ResponseEntity<?> get(@RequestParam int eventId){
+    public ResponseEntity<?> getEvent(@RequestParam int eventId){
         EventModel event = eventService.getEvent(eventId);
         if(null!=event)
             return new ResponseEntity<>(event,HttpStatus.FOUND);

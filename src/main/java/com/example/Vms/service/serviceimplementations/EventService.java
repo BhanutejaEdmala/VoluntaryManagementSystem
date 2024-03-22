@@ -28,7 +28,7 @@ public class EventService implements EventServiceInterface {
     ModelToEntity modelToEntity;
     @Autowired
     EntityToModel entityToModel;
-    public EventModel save(EventModel eventModel){
+    public EventModel saveEvent(EventModel eventModel){
        Event event = modelToEntity.EventModelToEvent(eventModel);
        eventRepo.save(event);
         return eventModel;

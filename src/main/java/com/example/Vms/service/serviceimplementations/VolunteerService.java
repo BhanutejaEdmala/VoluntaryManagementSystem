@@ -66,10 +66,6 @@ public class VolunteerService implements VolunteerServiceInterface {
        }
        return "Check The Data You've Entered";
     }
-   public List<OrganisationModel> totalOrganisations()
-   {
-        return organisationRepo.findAll().stream().map(entityToModel::organisationToOrganisationModel).toList();
-   }
    public List<OrganisationModel> findOrganisationByLoc(String location){
        return organisationRepo.findAll().stream().filter(i->i.getAddress().equals(location)).map(entityToModel::organisationToOrganisationModel).toList();
    }

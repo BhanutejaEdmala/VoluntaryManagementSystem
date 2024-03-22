@@ -2,17 +2,18 @@ package com.example.Vms.service.serviceinterfaces;
 import com.example.Vms.entities.User;
 import com.example.Vms.models.OrganisationModel;
 import com.example.Vms.models.UserModel;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
 public interface UserServiceInterface {
-    User save(UserModel user);
+    User saveUser(UserModel user);
 
     String deleteUser(int userId);
 
     String updateUser(int userId, User user);
-
-    List<OrganisationModel> registeredOrganisations(int userId);
+    List<OrganisationModel> totalOrganisations();
+    ResponseEntity<?> registeredOrganisations(String userName, String Password);
 
     String leaveOrgaisation(int organisationId, int userId);
 
@@ -21,5 +22,5 @@ public interface UserServiceInterface {
     String leaveEvent(int userId, int eventId, int organisationId);
 
     UserModel getUser(int userId);
-    List<String> viewMessages(String username);
+    List<String> viewMessages(String username,String password);
 }

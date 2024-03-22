@@ -14,6 +14,8 @@ import com.example.Vms.repositories.UserRepo;
 import com.example.Vms.repositories.VolunteerRepo;
 import com.example.Vms.service.serviceinterfaces.UserServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -42,7 +44,7 @@ ModelToEntity modelToEntity;
 @Autowired
 EntityToModel entityToModel;
 
-    public User save(UserModel user) {
+    public User saveUser(UserModel user) {
        User user1= modelToEntity.userModelToEntity(user);
         user1.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepo.save(user1);
@@ -85,12 +87,14 @@ EntityToModel entityToModel;
         return "User Doesn't Exist";
     }
 
-    public List<OrganisationModel> registeredOrganisations(int userId) {
-        User user = userRepo.findById(userId).orElse(null);
+    public ResponseEntity<?> registeredOrganisations(String userName, String password) {
+        User user = userRepo.findByName(userName).orElse(null);
         if (null!=user) {
-            return user.getOrganisations().stream().map(entityToModel::organisationToOrganisationModel).toList();
+            if(userAuthorisation(userName,password))
+                return new ResponseEntity<>("You Are Not Authorised To Do This", HttpStatus.OK);
+        return new ResponseEntity<>(user.getOrganisations().stream().map(entityToModel::organisationToOrganisationModel).toList(),HttpStatus.OK);
         }
-        return null;
+        return new ResponseEntity<>("No User Found",HttpStatus.NOT_FOUND);
     }
 
     public String leaveOrgaisation(int organisationId, int userId) {
@@ -151,14 +155,23 @@ EntityToModel entityToModel;
           return entityToModel.userEntityToModel(user);}
       return null;
     }
-
+    public List<OrganisationModel> totalOrganisations()
+    {
+        return organisationRepo.findAll().stream().map(entityToModel::organisationToOrganisationModel).toList();
+    }
     @Override
-    public List<String> viewMessages(String username) {
+    public List<String> viewMessages(String username,String password) {
+        if(userAuthorisation(username,password))
+                return List.of("Failed");
         if(userRepo.existsByName(username)){
            User user = userRepo.findByName(username).orElse(null);
            if(null!=user)
                return user.getMessages();
         }
         return null;
+    }
+    public boolean userAuthorisation(String username,String password){
+        User user = userRepo.findByName(username).orElse(null);
+        return null == user || passwordEncoder.matches(password, user.getPassword());
     }
 }

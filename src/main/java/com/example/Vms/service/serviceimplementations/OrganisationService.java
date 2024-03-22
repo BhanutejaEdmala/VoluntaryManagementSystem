@@ -40,7 +40,7 @@ public class OrganisationService implements OrganisationServiceInterface {
     @Autowired
     VolunteerService volunteerService;
 
-    public String save(OrganisationModel organisationModel, String userName, String password) {
+    public String saveOrganisation(OrganisationModel organisationModel, String userName, String password) {
         Organisation organisation = modelToEntity.organisationModelToOrganisation(organisationModel);
         if (!(organisationRepo.existsById(organisation.getOid()))) {
             if (!(userRepo.existsByName(userName)))
@@ -214,7 +214,7 @@ public class OrganisationService implements OrganisationServiceInterface {
         }
         return "Organisation with ID " + organisationId + " does not exist.";
     }
-
+@org.springframework.transaction.annotation.Transactional
     public String updateOrganisation(String userName,String password,Organisation organisation, int organisationId) {
         if(authorisationCheck(userName,password,organisationId))
             return "You're Not Authorised To Do This";
@@ -275,7 +275,7 @@ public class OrganisationService implements OrganisationServiceInterface {
              if(!(CollectionUtils.isEmpty(events)))
             events.stream().filter(i -> i.getVolunteerList().contains(volunteer)).forEach(event -> event.getVolunteerList().remove(volunteer));
             // Remove volunteer from organisations
-            if(!(CollectionUtils.isEmpty(organisations)))
+             if(!(CollectionUtils.isEmpty(organisations)))
                 organisations.stream().filter(i -> i.getVolunteers().contains(volunteer)).forEach(organisation -> organisation.getVolunteers().remove(volunteer));
             // Remove volunteer from user
             if(null!=user)
@@ -293,7 +293,7 @@ public class OrganisationService implements OrganisationServiceInterface {
         return "Volunteer Doesn't Exist";
     }
 
-    public List<String> viewMessagesOfVolunteers(String userName,String password,int organisationId) {
+    public List<String> viewMessagesFromVolunteers(String userName,String password,int organisationId) {
         if(authorisationCheck(userName,password,organisationId))
             return new ArrayList<>();
         Organisation organisation = organisationRepo.findById(organisationId).orElse(null);
@@ -416,9 +416,10 @@ public class OrganisationService implements OrganisationServiceInterface {
         LocalDateTime currentDateTime = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm yyyy-MM-dd");
         String formattedDateTime = currentDateTime.format(formatter);
-        userRepo.findAll().stream().filter(user -> waitingIds.contains(user.getUid())).forEach(user->{user.getMessages().add("Your Request To Join "+organisation.getName()+" has been rejected "+formattedDateTime);
+        userRepo.findAll().stream().filter(user -> waitingIds.contains(user.getUid())).forEach(user->{user.getMessages().add("Your Request To Join In"+organisation.getName()+" has been rejected "+formattedDateTime);
         userRepo.save(user);});
-        organisation.setWaitingListUserIds(new ArrayList<>());
+        organisation.getWaitingListUserIds().clear();
+        organisationRepo.save(organisation);
            return "Rejected";
     }
 }

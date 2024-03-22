@@ -9,8 +9,6 @@ import java.util.Set;
 public interface VolunteerServiceInterface {
     String add(String userName, int organisationId);
 
-    List<OrganisationModel> totalOrganisations();
-
     List<OrganisationModel> findOrganisationByLoc(String location);
 
     List<VolunteerModel> viewVolunteersInEvent(int eventId, int organisationId);

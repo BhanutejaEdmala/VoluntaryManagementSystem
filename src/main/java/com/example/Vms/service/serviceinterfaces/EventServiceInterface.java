@@ -4,7 +4,7 @@ import com.example.Vms.entities.Event;
 import com.example.Vms.models.EventModel;
 
 public interface EventServiceInterface {
-    EventModel save(EventModel eventModel);
+    EventModel saveEvent(EventModel eventModel);
 
     String deleteEvent(int eventId);
 

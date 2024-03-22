@@ -19,8 +19,8 @@ public class OrganisationController {
     @Autowired
     OrganisationServiceInterface organisationService;
 @PostMapping("/saveorg")
-    public ResponseEntity<?> add(@RequestBody @Valid OrganisationModel organisation,@RequestParam String userName,@RequestParam String password){
-    String result=organisationService.save(organisation,userName,password);
+    public ResponseEntity<?> addOrganisation(@RequestBody @Valid OrganisationModel organisation,@RequestParam String userName,@RequestParam String password){
+    String result=organisationService.saveOrganisation(organisation,userName,password);
          return new ResponseEntity<>(result, HttpStatus.CREATED);
 }
 @PatchMapping("/assignevent")
@@ -61,7 +61,7 @@ public class OrganisationController {
 }
 @GetMapping("/viewmessages")
     public ResponseEntity<?> viewMessages(@RequestParam String username,@RequestParam String password,int organisationId){
-  List<String> messages =  organisationService.viewMessagesOfVolunteers(username,password,organisationId);
+  List<String> messages =  organisationService.viewMessagesFromVolunteers(username,password,organisationId);
   if(null!=messages)
       return ResponseEntity.ok(messages);
   return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No Messages Found");

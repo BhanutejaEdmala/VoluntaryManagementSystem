@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -18,12 +19,19 @@ public class UserController {
     UserServiceInterface userService;
     @PostMapping("/add")
     public User addUser(@RequestBody @Valid UserModel user){
-        return userService.save(user);
+        return userService.saveUser(user);
         }
     @DeleteMapping("/delete")
-    public ResponseEntity<?> delete(@RequestParam int userId){
+    public ResponseEntity<?> deleteUser(@RequestParam int userId){
         String result= userService.deleteUser(userId);
         return ResponseEntity.ok(result);
+    }
+    @GetMapping("/totalorg")
+    public ResponseEntity<?> totalOrganisations(){
+        List<OrganisationModel> organisationList = userService.totalOrganisations();
+        if(!(organisationList.isEmpty()))
+            return new ResponseEntity<>(organisationList,HttpStatus.FOUND);
+        return new ResponseEntity<>("No Organisations Found",HttpStatus.NO_CONTENT);
     }
     @PatchMapping("/update")
     public ResponseEntity<?> updateUser(@RequestParam int userId,@RequestBody User user){
@@ -31,11 +39,8 @@ public class UserController {
         return ResponseEntity.ok(result);
     }
     @GetMapping("/regorganisations")
-    public ResponseEntity<?> registeredOrganisations(@RequestParam int userId){
-      List<OrganisationModel> organisations =  userService.registeredOrganisations(userId);
-      if(null!=organisations)
-          return new ResponseEntity<>(organisations, HttpStatus.FOUND);
-      return new ResponseEntity<>("You Haven't Registered In Any Organisation",HttpStatus.FOUND);
+    public ResponseEntity<?> registeredOrganisations(@RequestParam String userName,@RequestParam String password){
+      return userService.registeredOrganisations(userName,password);
     }
     @DeleteMapping("/leaveorganisation")
     public ResponseEntity<?> leaveOrganisation(@RequestParam int organisationId,@RequestParam int userId){
@@ -60,10 +65,12 @@ public class UserController {
         return new ResponseEntity<>(userService.leaveEvent(userId,eid,organisationId),HttpStatus.FOUND);
     }
     @GetMapping("/viewmessages")
-    public ResponseEntity<?> viewMessages(@RequestParam String username){
-        List<String> messages = userService.viewMessages(username);
-        if(null!=messages)
+    public ResponseEntity<?> viewMessages(@RequestParam String username,@RequestParam String password){
+        List<String> messages = userService.viewMessages(username,password);
+        if(messages.get(0).equals("Failed"))
+            return new ResponseEntity<>("You Are Not Authorised TO Do This",HttpStatus.OK);
+        ;
             return new ResponseEntity<>(messages,HttpStatus.FOUND);
-        return new ResponseEntity<>("No Messages",HttpStatus.OK);
+
     }
 }
