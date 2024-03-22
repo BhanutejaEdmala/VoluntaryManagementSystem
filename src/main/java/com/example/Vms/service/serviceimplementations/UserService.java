@@ -18,6 +18,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -97,11 +100,15 @@ EntityToModel entityToModel;
             if (organisation.getUsers().contains(user)) {
                 List<Volunteer> volunteers = volunteerRepo.findAll();
                 Volunteer volunteer = volunteers.stream().filter(i -> i.getUser().equals(user) && i.getOrganisations().contains(organisation)).findFirst().orElse(null);
-                assert null!=volunteer ;
-                volunteerService.leaveOrganisation(volunteer.getVid());
+                if(null!=volunteer)
+                    volunteerService.leaveOrganisation(volunteer.getVid());
                 organisation.getUsers().remove(user);
                 organisationRepo.save(organisation);
                 user.getOrganisations().remove(organisation);
+                LocalDateTime currentDateTime = LocalDateTime.now();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm yyyy-MM-dd");
+                String formattedDateTime = currentDateTime.format(formatter);
+                user.getMessages().add("You Are Removed From "+organisation.getName()+" "+formattedDateTime);
                 userRepo.save(user);
                 return "Successfully Left";
             }
@@ -143,5 +150,15 @@ EntityToModel entityToModel;
       if(null!=user){
           return entityToModel.userEntityToModel(user);}
       return null;
+    }
+
+    @Override
+    public List<String> viewMessages(String username) {
+        if(userRepo.existsByName(username)){
+           User user = userRepo.findByName(username).orElse(null);
+           if(null!=user)
+               return user.getMessages();
+        }
+        return null;
     }
 }

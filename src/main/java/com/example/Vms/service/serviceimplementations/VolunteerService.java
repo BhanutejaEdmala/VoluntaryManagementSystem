@@ -35,10 +35,12 @@ public class VolunteerService implements VolunteerServiceInterface {
     UserRepo userRepo;
     @Autowired
     EntityToModel entityToModel;
-    public String add(int userId,int organisationId){
-       if(organisationRepo.existsById(organisationId)&&userRepo.existsById(userId)) {
+    @Autowired
+    OrganisationService organisationService;
+    public String add(String userName,int organisationId){
+       if(organisationRepo.existsById(organisationId)&&userRepo.existsByName(userName)) {
            Organisation organisation = organisationRepo.findById(organisationId).orElse(null);
-           User user = userRepo.findById(userId).orElse(null);
+           User user = userRepo.findByName(userName).orElse(null);
            if(null!=organisation&&null!=user&&!(user.getOrganisations().contains(organisation))) {
                user.getOrganisations().add(organisation);
                    Volunteer volunteer = new Volunteer(user);
@@ -48,12 +50,19 @@ public class VolunteerService implements VolunteerServiceInterface {
                 organisationList.add(organisation);
                 volunteer.setOrganisations(organisationList);
                    organisation.getVolunteers().add(volunteer);
-                   userRepo.save(user);
+                  // userRepo.save(user);
                    organisationRepo.save(organisation);
-               return "Registered Successfully";
+               LocalDateTime currentDateTime = LocalDateTime.now();
+               DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm yyyy-MM-dd");
+               String formattedDateTime = currentDateTime.format(formatter);
+                   user.getMessages().add("Your Joining Request is Approved By "+organisation.getName()+" "+formattedDateTime);
+                   userRepo.save(user);
+               return "You've Registered Successfully In "+organisation.getName();
            }
-           else
-               return "you already registered as a volunteer in this organisation";
+           else if(null!=user&&null!=organisation) {
+               user.getMessages().add("you already registered as a volunteer in "+organisation.getName());
+                userRepo.save(user);
+           }
        }
        return "Check The Data You've Entered";
     }
@@ -138,6 +147,8 @@ public class VolunteerService implements VolunteerServiceInterface {
         Organisation organisation = organisationRepo.findById(organisationId).orElse(null);
         Volunteer volunteer = volunteerRepo.findById(volunteerId).orElse(null);
         if(null!=organisation&&null!=volunteer){
+            if(!(organisation.getVolunteers().contains(volunteer)))
+                 return "You Are Not Part Of This Organisation";
             LocalDateTime currentDateTime = LocalDateTime.now();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm yyyy-MM-dd");
             String formattedDateTime = currentDateTime.format(formatter);
@@ -175,12 +186,29 @@ public class VolunteerService implements VolunteerServiceInterface {
             return entityToModel.volunteerToVolunteerModel(volunteer);
         return null;
  }
- public List<EventModel> eventsRegisteredByVolInOrg(int volunteerId,int organisationId){
+ public List<EventModel> eventsRegisteredByVolInOrg(String userName,String password,int volunteerId,int organisationId){
         Volunteer volunteer = volunteerRepo.findById(volunteerId).orElse(null);
      Organisation organisation = organisationRepo.findById(organisationId).orElse(null);
      if(null!=volunteer&&null!=organisation){
          return volunteerRepo.findEventsByVolunteerAndOrganisation(volunteerId,organisationId).stream().map(entityToModel::eventToEventModel).toList();
      }
      return null;
+ }
+ public String joinRequest(String userName,int organisationId){
+        if(!(userRepo.existsByName(userName)))
+            return "UserName Is Invalid";
+        Organisation  organisation = organisationRepo.findById(organisationId).orElse(null);
+        User user = userRepo.findByName(userName).orElse(null);
+        List<String>  organisationMessages = new ArrayList<>();
+        if(null!=organisation){
+              organisationMessages =organisation.getMessages();
+        organisationMessages.add("You Have Received A Joining Request From "+userName);
+            assert user != null;
+            organisation.getWaitingListUserIds().add(user.getUid());
+        organisationRepo.save(organisation);
+        return "Request Sent Successfully , You Will Receive An Approval Message Upon Accepting Your Joining Request";}
+        else
+            return "No Organisation Found";
+
  }
 }

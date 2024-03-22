@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 public interface VolunteerServiceInterface {
-    String add(int userId, int organisationId);
+    String add(String userName, int organisationId);
 
     List<OrganisationModel> totalOrganisations();
 
@@ -30,5 +30,6 @@ public interface VolunteerServiceInterface {
     List<OrganisationModel> searchOrgByAddress(String address);
 
     VolunteerModel get(int volunteerId);
-    List<EventModel> eventsRegisteredByVolInOrg(int volunteerId,int organisationId);
+    List<EventModel> eventsRegisteredByVolInOrg(String userName,String password,int volunteerId,int organisationId);
+    public String joinRequest(String userName,int organisationId);
 }

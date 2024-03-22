@@ -37,46 +37,63 @@ public class OrganisationService implements OrganisationServiceInterface {
     EntityToModel entityToModel;
     @Autowired
     ModelToEntity modelToEntity;
-    public OrganisationModel save(OrganisationModel organisationModel){
-       Organisation organisation = modelToEntity.organisationModelToOrganisation(organisationModel);
-        if(!(organisationRepo.existsById(organisation.getOid()))){
-        organisationRepo.save(organisation);
-        return organisationModel;}
+    @Autowired
+    VolunteerService volunteerService;
+
+    public String save(OrganisationModel organisationModel, String userName, String password) {
+        Organisation organisation = modelToEntity.organisationModelToOrganisation(organisationModel);
+        if (!(organisationRepo.existsById(organisation.getOid()))) {
+            if (!(userRepo.existsByName(userName)))
+                return "No Account Details Found , Create An Account To Save An Organisation";
+            organisation.getAdminDetails().addAll(List.of(userName, Base64.getEncoder().encodeToString(password.getBytes())));
+            organisationRepo.save(organisation);
+            return "Organisation Saved";
+        }
         return null;
     }
-    public String addEvent(int organisationId,int eventId) {
-    if(organisationRepo.existsById(organisationId)&&eventRepo.existsById(eventId)){
-        Organisation organisation = organisationRepo.findById(organisationId).orElse(null);
-        Event event = eventRepo.findById(eventId).orElse(null);
-        if(null!=organisation&&null!=event&&!(organisation.getEvents().contains(event))&&event.getStatus().equals("active")){
-            event.getOrganisations().add(organisation);
-            organisation.getEvents().add(event);
-            organisationRepo.save(organisation);
-            return "Event Added";
+
+    public String addEvent(String username, String password, int organisationId, int eventId) {
+        if (organisationRepo.existsById(organisationId) && eventRepo.existsById(eventId)) {
+            Organisation organisation = organisationRepo.findById(organisationId).orElse(null);
+            Event event = eventRepo.findById(eventId).orElse(null);
+            if (null != organisation && null != event && !(organisation.getEvents().contains(event)) && event.getStatus().equals("active")) {
+                if (!(userRepo.existsByName(username)))
+                    return "User Not Found";
+                if (authorisationCheck(username, password, organisationId))
+                    return "Authorisation Failed";
+                event.getOrganisations().add(organisation);
+                organisation.getEvents().add(event);
+                organisationRepo.save(organisation);
+                return "Event Added";
+            }
+            return "This Event Might Already Be Present In The Organisation OR This Event Might Be Closed";
         }
-        return "This Event Might Already Be Present In This Organisation OR This Event Might Be Closed";
+        return "Check Whether Those Organisation And Event Exist In The First Place";
     }
-    return  "Check Whether Those Organisation And Event Exist In The First Place";
-}
-public String assignEvent(int volunteerId,int eventId,int organisationId){
-        if(volunteerRepo.existsById(volunteerId)&&eventRepo.existsById(eventId)&&organisationRepo.existsById(organisationId)){
+
+    public String assignEvent(String userName,String password,int volunteerId, int eventId, int organisationId) {
+        if(authorisationCheck(userName,password,organisationId))
+            return "You Are Not Authorised To Do This";
+        if (volunteerRepo.existsById(volunteerId) && eventRepo.existsById(eventId) && organisationRepo.existsById(organisationId)) {
             Event event = eventRepo.findById(eventId).orElse(null);
             Organisation organisation = organisationRepo.findById(organisationId).orElse(null);
             Volunteer volunteer = volunteerRepo.findById(volunteerId).orElse(null);
             List<Event> events = new ArrayList<>();
-             if(null!=volunteer)
+            if (null != volunteer)
                 events = volunteer.getEvents();
-             if(events.stream().anyMatch(event1 -> {
-                if(null!=event)
-                    if(event1.getDate().equals(event.getDate())){
-                String[] existTimings = event1.getTimings().split("to");
-                String[] newTimings= event.getTimings().split("to");
-                return timingsCompare(newTimings,existTimings);}
+            if (events.stream().anyMatch(event1 -> {
+                if (null != event)
+                    if (event1.getDate().equals(event.getDate())) {
+                        String[] existTimings = event1.getTimings().split("to");
+                        String[] newTimings = event.getTimings().split("to");
+                        return timingsCompare(newTimings, existTimings);
+                    }
                 return false;
-            })){
-                return "Volunteer Already Assigned To Another Event During The Timings Of This Event";}
-            if(null!=volunteer&&volunteer.getOrganisations().contains(organisation)&&null!=organisation&&organisation.getEvents().contains(event)&&null!=event){
-                if(!(event.getStatus().equals("active"))||organisation.getClosedevents().contains(eventId))
+            })) {
+                return "Volunteer Already Assigned To Another Event During The Timings Of This Event";
+            }
+            if (null != volunteer && volunteer.getOrganisations().contains(organisation) && null != organisation && organisation.getEvents().contains(event) && null != event) {
+                if (!(event.getStatus().equals("active")) || organisation.getClosedevents().contains(eventId))
                     return "This Event Is Closed";
                 event.getVolunteerList().add(volunteer);
                 volunteer.getEvents().add(event);
@@ -85,38 +102,46 @@ public String assignEvent(int volunteerId,int eventId,int organisationId){
             }
             return "check whether volunteer has registered in this organisation and also check for the presence of this event in that organisation ";
         }
-        return  null;
-}
-public List<EventModel> viewEventsInOrganisation(int organisationId){
-       if(organisationRepo.existsById(organisationId)){
-           Organisation organisation = organisationRepo.findById(organisationId).orElse(null);
-           if(null!=organisation&&CollectionUtils.isEmpty(organisation.getEvents()))
+        return null;
+    }
+
+    public List<EventModel> viewEventsInOrganisation(int organisationId) {
+        if (organisationRepo.existsById(organisationId)) {
+            Organisation organisation = organisationRepo.findById(organisationId).orElse(null);
+            if (null != organisation && CollectionUtils.isEmpty(organisation.getEvents()))
                 return new ArrayList<>();
-           return organisation!=null?organisation.getEvents().stream().filter(i->!(i.getStatus().equals("closed"))).map(entityToModel::eventToEventModel).toList():null;
-       }
-return  null;
-}
-public String sendMessage(int volunteerId, int organisationId, String message){
-        if(volunteerRepo.existsById(volunteerId)&&organisationRepo.existsById(organisationId)){
+            return organisation != null ? organisation.getEvents().stream().filter(i -> !(i.getStatus().equals("closed"))).map(entityToModel::eventToEventModel).toList() : null;
+        }
+        return null;
+    }
+
+    public String sendMessage(String userName,String password,int volunteerId, int organisationId, String message) {
+        if(authorisationCheck(userName,password,organisationId))
+            return "You're Not Authorised To Do This";
+        if (volunteerRepo.existsById(volunteerId) && organisationRepo.existsById(organisationId)) {
             Volunteer volunteer = volunteerRepo.findById(volunteerId).orElse(null);
             Organisation organisation = organisationRepo.findById(organisationId).orElse(null);
-            if(null!=volunteer&&volunteer.getOrganisations().contains(organisation)){
+            if (null != volunteer && volunteer.getOrganisations().contains(organisation)) {
                 LocalDateTime currentDateTime = LocalDateTime.now();
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm yyyy-MM-dd");
                 String formattedDateTime = currentDateTime.format(formatter);
-                if(null==volunteer.getMessages())
+                if (null == volunteer.getMessages())
                     volunteer.setMessages(new LinkedHashSet<>());
-                volunteer.getMessages().add(message+" "+formattedDateTime);
-                         volunteerRepo.save(volunteer);
-            return "Message Sent";}
-           return "This Volunteer Is Not Part Of The Organisation";
+                volunteer.getMessages().add(message + " " + formattedDateTime);
+                volunteerRepo.save(volunteer);
+                return "Message Sent";
+            }
+            return "This Volunteer Is Not Part Of The Organisation";
         }
         return null;
-}
-    public String groupMessage(int organisationId, String message) {
+    }
+
+    public String groupMessage(String userName,String password,int organisationId, String message) {
+        if(authorisationCheck(userName,password,organisationId))
+            return "You're Not Authorised To Do This";
         if (organisationRepo.existsById(organisationId)) {
             Organisation organisation = organisationRepo.findById(organisationId).orElse(null);
-            if (null!=organisation) {
+            if (null != organisation) {
                 Set<Volunteer> volunteers = new HashSet<>(organisation.getVolunteers()); // Create a copy of the set
                 LocalDateTime currentDateTime = LocalDateTime.now();
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm yyyy-MM-dd");
@@ -131,43 +156,50 @@ public String sendMessage(int volunteerId, int organisationId, String message){
         }
         return "No Organisation Found";
     }
-    public String suggestVolunteers(int eventId,int organisationId){
-        if(eventRepo.existsById(eventId)&&organisationRepo.existsById(organisationId)){
-           Event event = eventRepo.findById(eventId).orElse(null);
-           Organisation organisation = organisationRepo.findById(organisationId).orElse(null);
-           if(null!=event&&null!=organisation&&organisation.getEvents().contains(event)){
-               Set<String> skills = event.getSkills_good_to_have();
-               List<Volunteer> volunteers = new ArrayList<>(organisation.getVolunteers());
-               LocalDateTime currentDateTime = LocalDateTime.now();
-               DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm yyyy-MM-dd");
-               String formattedDateTime = currentDateTime.format(formatter);
-               String message = "You Are Very Much Suited For This Event"+" '"+event.getName()+"', time received:"+formattedDateTime;
-               if(volunteers.stream().anyMatch(i->CollectionUtils.containsAny(skills,i.getSkills()))){
-               for (Volunteer volunteer : volunteers) {
-                   if(CollectionUtils.containsAny(skills,volunteer.getSkills())){
-                             volunteer.getMessages().add(message);}
-                   volunteerRepo.save(volunteer);
-               }
-               return "Sent To All Matching Volunteers";}
-               else{
-                   return "There Are No Suitable Volunteers";
-               }
-           }
-           return "No Such Event Found In This Organisation";
+
+    public String suggestVolunteers(String userName,String password,int eventId, int organisationId) {
+        if(authorisationCheck(userName,password,organisationId))
+            return "You're Not Authorised To Do This";
+        if (eventRepo.existsById(eventId) && organisationRepo.existsById(organisationId)) {
+            Event event = eventRepo.findById(eventId).orElse(null);
+            Organisation organisation = organisationRepo.findById(organisationId).orElse(null);
+            if (null != event && null != organisation && organisation.getEvents().contains(event)) {
+                Set<String> skills = event.getSkills_good_to_have();
+                List<Volunteer> volunteers = new ArrayList<>(organisation.getVolunteers());
+                LocalDateTime currentDateTime = LocalDateTime.now();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm yyyy-MM-dd");
+                String formattedDateTime = currentDateTime.format(formatter);
+                String message = "You Are Very Much Suited For This Event" + " '" + event.getName() + "', time received:" + formattedDateTime;
+                if (volunteers.stream().anyMatch(i -> CollectionUtils.containsAny(skills, i.getSkills()))) {
+                    for (Volunteer volunteer : volunteers) {
+                        if (CollectionUtils.containsAny(skills, volunteer.getSkills())) {
+                            volunteer.getMessages().add(message);
+                        }
+                        volunteerRepo.save(volunteer);
+                    }
+                    return "Sent To All Matching Volunteers";
+                } else {
+                    return "There Are No Suitable Volunteers";
+                }
+            }
+            return "No Such Event Found In This Organisation";
         }
         return "Check The Details You've Entered";
     }
+
     @Transactional
-    public String removeOrganization(int organisationId) {
+    public String removeOrganization(String userName,String password,int organisationId) {
+        if(authorisationCheck(userName,password,organisationId))
+            return "You're Not Authorised To Do This";
         Organisation organisation = organisationRepo.findById(organisationId).orElse(null);
-        if (null!=organisation) {
+        if (null != organisation) {
             // Retrieve related entities
             List<Volunteer> volunteers = new ArrayList<>(organisation.getVolunteers());
             List<Event> events = organisation.getEvents();
             // Remove the organization from related volunteers
-            volunteers.forEach(volunteer -> removeVolunteer(volunteer.getVid()));
+            volunteers.forEach(volunteer -> removeVolunteer(userName,password, organisationId,volunteer.getVid()));
             // Remove the organization from related events
-            events.stream().filter(i->i.getOrganisations().contains(organisation)).forEach(event -> event.getOrganisations().remove(organisation));
+            events.stream().filter(i -> i.getOrganisations().contains(organisation)).forEach(event -> event.getOrganisations().remove(organisation));
             // Clear organization references from related entities
             organisation.getVolunteers().clear();
             organisation.getEvents().clear();
@@ -182,24 +214,31 @@ public String sendMessage(int volunteerId, int organisationId, String message){
         }
         return "Organisation with ID " + organisationId + " does not exist.";
     }
-    public String updateOrganisation(Organisation organisation,int organisationId){
+
+    public String updateOrganisation(String userName,String password,Organisation organisation, int organisationId) {
+        if(authorisationCheck(userName,password,organisationId))
+            return "You're Not Authorised To Do This";
         Organisation organisation1 = organisationRepo.findById(organisationId).orElse(null);
-        if(null!=organisation1){
+        if (null != organisation1) {
             organisation1.setName(organisation.getName());
-             organisation1.setAddress(organisation.getAddress());
+            organisation1.setAddress(organisation.getAddress());
             organisation1.setMobile(organisation.getMobile());
-           organisationRepo.save(organisation1);
-           return "Organisation Updated";
+            organisationRepo.save(organisation1);
+            return "Organisation Updated";
         }
         return "organisation doesn't exist";
     }
-    public String closeEventForOrg(int eventId,int organisationID){
+
+    public String closeEventForOrg(String userName,String password,int eventId, int organisationID) {
+        if(authorisationCheck(userName,password,organisationID))
+            return "You're Not Authorised To Do This";
         Event event = eventRepo.findById(eventId).orElse(null);
         Organisation organisation = organisationRepo.findById(organisationID).orElse(null);
-        List<Integer> events = new ArrayList<>();;
-        if(null!=event&&null!=organisation) {
+        List<Integer> events = new ArrayList<>();
+        ;
+        if (null != event && null != organisation) {
             List<Volunteer> volunteers = event.getVolunteerList();
-            if(!(organisation.getEvents().contains(event)))
+            if (!(organisation.getEvents().contains(event)))
                 return "No Such Event Found In This Organisation";
             if (organisation.getClosedevents() != null) {
                 events.add(eventId);
@@ -208,14 +247,15 @@ public String sendMessage(int volunteerId, int organisationId, String message){
                 events.add(eventId);
                 organisation.setClosedevents(events);
             }
-            if(!(CollectionUtils.isEmpty(volunteers))){
+            if (!(CollectionUtils.isEmpty(volunteers))) {
                 List<Volunteer> volunteersToRemove = new ArrayList<>(volunteers);
                 for (Volunteer volunteer : volunteersToRemove) {
                     int uid = volunteer.getUser().getUid();
-                    try{
-                    userService.leaveEvent(uid, eventId, organisationID);}
-                    catch(Exception e){
-                    System.out.println();}
+                    try {
+                        userService.leaveEvent(uid, eventId, organisationID);
+                    } catch (Exception e) {
+                        System.out.println();
+                    }
                 }
                 organisationRepo.save(organisation);
             }
@@ -223,69 +263,162 @@ public String sendMessage(int volunteerId, int organisationId, String message){
         }
         return "Check The Details You've Entered";
     }
+
     @Transactional
-    public String removeVolunteer(int volunteerId) {
+    public String removeVolunteer(String username ,String password,int organisationId,int volunteerId) {
         Volunteer volunteer = volunteerRepo.findById(volunteerId).orElse(null);
-        if (null!=volunteer) {
+        if (null != volunteer) {
             List<Organisation> organisations = organisationRepo.findAll();
             List<Event> events = eventRepo.findAll();
             User user = volunteer.getUser();
             // Remove volunteer from events
-            events.stream().filter(i->i.getVolunteerList().contains(volunteer)).forEach(event -> event.getVolunteerList().remove(volunteer));
+             if(!(CollectionUtils.isEmpty(events)))
+            events.stream().filter(i -> i.getVolunteerList().contains(volunteer)).forEach(event -> event.getVolunteerList().remove(volunteer));
             // Remove volunteer from organisations
-            organisations.stream().filter(i->i.getVolunteers().contains(volunteer)).forEach(organisation -> organisation.getVolunteers().remove(volunteer));
+            if(!(CollectionUtils.isEmpty(organisations)))
+                organisations.stream().filter(i -> i.getVolunteers().contains(volunteer)).forEach(organisation -> organisation.getVolunteers().remove(volunteer));
             // Remove volunteer from user
-            user.getVolunteers().remove(volunteer);
+            if(null!=user)
+             user.getVolunteers().remove(volunteer);
             // Save changes
             eventRepo.saveAll(events);
             organisationRepo.saveAll(organisations);
-            userRepo.save(user);
+            if(null!=user){
+                user.getMessages().add("You Are Removed As Volunteer From Organisation");
+            userRepo.save(user);}
             // Delete the volunteer from the repository
             volunteerRepo.delete(volunteer);
             return "Volunteer is Deleted";
         }
         return "Volunteer Doesn't Exist";
     }
-    public List<String> viewMessagesOfVolunteers(int organisationId){
+
+    public List<String> viewMessagesOfVolunteers(String userName,String password,int organisationId) {
+        if(authorisationCheck(userName,password,organisationId))
+            return new ArrayList<>();
         Organisation organisation = organisationRepo.findById(organisationId).orElse(null);
-        return organisation!=null?organisation.getMessages():null;
+        return organisation != null ? organisation.getMessages() : null;
     }
-    public OrganisationModel get(int organisationId){
+
+    public OrganisationModel getOrganisation(int organisationId) {
         Organisation organisation = organisationRepo.findById(organisationId).orElse(null);
-        return null!=organisation ? entityToModel.organisationToOrganisationModel(organisation):null;
+        return null != organisation ? entityToModel.organisationToOrganisationModel(organisation) : null;
     }
-    public String closeEvent(int eventId){
+
+    public String closeEvent(int eventId) {
         Event event = eventRepo.findById(eventId).orElse(null);
-        if(null!=event){
+        if (null != event) {
             List<Volunteer> volunteers = new ArrayList<>();
             volunteers = event.getVolunteerList();
-            volunteers.forEach(volunteer ->  volunteer.getEvents().remove(event));
+            volunteers.forEach(volunteer -> volunteer.getEvents().remove(event));
             volunteerRepo.saveAll(volunteers);
             event.getVolunteerList().clear();
             event.setStatus("closed");
             eventRepo.save(event);
-            return "event closed";}
+            return "event closed";
+        }
         return "event doesn't exist";
     }
-    public boolean timingsCompare(String[] newTimings,String[] existTimings){
+
+    public boolean timingsCompare(String[] newTimings, String[] existTimings) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a");
-        LocalTime existStartTime = LocalTime.parse(existTimings[0].strip(),formatter);
-        LocalTime existEndTime = LocalTime.parse(existTimings[1].strip(),formatter);
-        LocalTime newStartTime = LocalTime.parse(newTimings[0].strip(),formatter);
-        LocalTime newEndTime = LocalTime.parse(newTimings[1].strip(),formatter);
-        if(newEndTime.equals(existStartTime))
+        LocalTime existStartTime = LocalTime.parse(existTimings[0].strip(), formatter);
+        LocalTime existEndTime = LocalTime.parse(existTimings[1].strip(), formatter);
+        LocalTime newStartTime = LocalTime.parse(newTimings[0].strip(), formatter);
+        LocalTime newEndTime = LocalTime.parse(newTimings[1].strip(), formatter);
+        if (newEndTime.equals(existStartTime))
             return false;
-        else if(newStartTime.compareTo(existEndTime)>0)
+        else if (newStartTime.isAfter(existEndTime))
             return false;
-        else if(newEndTime.isBefore(existStartTime))
+        else if (newEndTime.isBefore(existStartTime))
             return false;
-        else if(newStartTime.isAfter(existStartTime)&&newEndTime.isBefore(existEndTime))
+        else if (newStartTime.isAfter(existStartTime) && newEndTime.isBefore(existEndTime))
             return true;
-        else if(newStartTime.isBefore(existStartTime)&&(newEndTime.isAfter(existStartTime)&&newEndTime.isBefore(existEndTime)))
+        else if (newStartTime.isBefore(existStartTime) && newEndTime.isBefore(existEndTime))
             return true;
-        else if(newStartTime.equals(existStartTime))
-            return true;
+        else return newStartTime.equals(existStartTime);
+    }
+
+    public String addEventInOrganisation(String username, String password, EventModel eventModel, int oid) {
+        if (authorisationCheck(username, password, oid))
+            return "Authorization Failed";
+        Event event = modelToEntity.EventModelToEvent(eventModel);
+        Event event1 = eventRepo.save(event);
+        return addEvent(username, password, oid, event1.getEid());
+    }
+    boolean authorisationCheck(String username, String password, int oid) {
+        Organisation organisation = organisationRepo.findById(oid).orElse(null);
+        assert organisation != null;
+        List<String> details = new ArrayList<>(organisation.getAdminDetails());
+        if (CollectionUtils.isEmpty(organisation.getAdminDetails()))
+            details = new ArrayList<>(organisation.getAdminDetails());
+        String encodedString = details.get(1);
+        byte[] decodedBytes = Base64.getDecoder().decode(encodedString);
+        String decodedString = new String(decodedBytes);
+        return !(details.get(0).equals(username) && decodedString.equals(password));
+    }
+    public String approveJoinRequests(String userName,String password,int organisationId) {
+        if(!(userRepo.existsByName(userName)))
+            return "User Not Found";
+        if(authorisationCheck(userName,password,organisationId))
+            return "You Are Not Authorised To Do This";
+        Organisation organisation = organisationRepo.findById(organisationId).orElse(null);
+        List<Integer> waitingIds;
+        if (null != organisation)
+            waitingIds = organisation.getWaitingListUserIds();
         else
-            return false;
+            return "No Organisation Found";
+        if (CollectionUtils.isEmpty(waitingIds))
+            return "Waiting List Is Empty";
+        List<User> users = waitingIds.stream().map(id -> userRepo.findById(id).orElse(null)).filter(Objects::nonNull).toList();
+        organisation.getWaitingListUserIds().clear();
+        organisationRepo.save(organisation);
+        users.forEach(user -> volunteerService.add(user.getName(), organisationId));
+        return "Requests Approved Successfully";
+    }
+    public String approveSingleRequest(String username,String password,String user,int organisationId){
+        if(!(userRepo.existsByName(username)))
+            return "User Not Found";
+        if(authorisationCheck(username,password,organisationId))
+            return "You Are Not Authorised To Do This";
+        Organisation organisation = organisationRepo.findById(organisationId).orElse(null);
+        List<Integer> waitingIds = new ArrayList<>();
+        if (null != organisation)
+            waitingIds = organisation.getWaitingListUserIds();
+        else
+            return "No Organisation Found";
+        if (CollectionUtils.isEmpty(waitingIds))
+            return "Waiting List Is Empty";
+        if(!(userRepo.existsByName(user)))
+            return user+" not found";
+        User user1 = userRepo.findByName(user).orElse(null);
+        if(null==user1||!(waitingIds.contains(user1.getUid())))
+            return user+" is Not In The Waiting List";
+        volunteerService.add(user1.getName(),organisationId);
+        organisation.getWaitingListUserIds().remove(user1.getUid());
+        organisationRepo.save(organisation);
+        return "Request Accepted";
+    }
+    public String rejectingRequests(String username,String password,int organisationId){
+        if(userRepo.findAll().stream().noneMatch(user->user.getName().equals(username)))
+            return "User Not Found";
+        if(authorisationCheck(username,password,organisationId))
+            return "You Are Not Authorised To Do This";
+        Organisation organisation = organisationRepo.findById(organisationId).orElse(null);
+        List<Integer> waitingIds;
+        if (null != organisation)
+            waitingIds = organisation.getWaitingListUserIds();
+        else {
+            return "No Organisation Found";
+        }
+        if (CollectionUtils.isEmpty(waitingIds))
+            return "Waiting List Is Empty";
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm yyyy-MM-dd");
+        String formattedDateTime = currentDateTime.format(formatter);
+        userRepo.findAll().stream().filter(user -> waitingIds.contains(user.getUid())).forEach(user->{user.getMessages().add("Your Request To Join "+organisation.getName()+" has been rejected "+formattedDateTime);
+        userRepo.save(user);});
+        organisation.setWaitingListUserIds(new ArrayList<>());
+           return "Rejected";
     }
 }

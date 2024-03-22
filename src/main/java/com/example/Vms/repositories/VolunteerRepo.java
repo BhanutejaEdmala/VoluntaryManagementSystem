@@ -14,5 +14,6 @@ public interface VolunteerRepo extends JpaRepository<Volunteer,Integer> {
     @Query("SELECT DISTINCT e FROM Event e JOIN e.organisations o JOIN e.volunteerList v " +
             "WHERE v.vid = :vid AND o.oid = :oid")
     List<Event> findEventsByVolunteerAndOrganisation(@Param("vid") int vid, @Param("oid") int oid);
-
+    String findByName(String name);
+     boolean existsByName(String name);
 }

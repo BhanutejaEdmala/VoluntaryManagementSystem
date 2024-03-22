@@ -26,5 +26,8 @@ public class OrganisationModel {
     private Set<Volunteer> volunteers = new LinkedHashSet<>();
     @JsonIgnore
     private List<Event> events = new ArrayList<>();
-
+    @JsonIgnore
+    private List<String> adminDetails = new ArrayList<>();
+    @JsonIgnore
+    private List<Integer> waitingListUserIds = new ArrayList<>();
 }

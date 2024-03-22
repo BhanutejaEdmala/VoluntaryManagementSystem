@@ -59,4 +59,11 @@ public class UserController {
     public ResponseEntity<?> leaveEvent(@RequestParam int userId,@RequestParam int eid,@RequestParam int organisationId){
         return new ResponseEntity<>(userService.leaveEvent(userId,eid,organisationId),HttpStatus.FOUND);
     }
+    @GetMapping("/viewmessages")
+    public ResponseEntity<?> viewMessages(@RequestParam String username){
+        List<String> messages = userService.viewMessages(username);
+        if(null!=messages)
+            return new ResponseEntity<>(messages,HttpStatus.FOUND);
+        return new ResponseEntity<>("No Messages",HttpStatus.OK);
+    }
 }

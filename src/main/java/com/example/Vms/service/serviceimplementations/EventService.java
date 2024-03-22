@@ -49,19 +49,18 @@ public class EventService implements EventServiceInterface {
     }
     public String updateEvent(Event event,int eventId){
         Event event1 = eventRepo.findById(eventId).orElse(null);
-        if(event1!=null&&!(CollectionUtils.isEmpty(event1.getVolunteerList())))
+        if(null==event1)
+            return "Event Not Found";
+        if(!CollectionUtils.isEmpty(event1.getVolunteerList()))
              return "This Event Is Already Assigned To Few Volunteers , Updating It Might Lead To Confusion";
-        if(null!=event1){
-           event1.setName(event.getName());
-           event1.setDate(event.getDate());
-           event1.setLocation(event.getLocation());
-           event1.setTimings(event.getTimings());
-           event1.setStatus(event.getStatus());
-           event1.getSkills_good_to_have().addAll(event.getSkills_good_to_have());
-           eventRepo.save(event1);
-           return "Event updated";
-        }
-        return null;
+        event1.setName(event.getName());
+        event1.setDate(event.getDate());
+        event1.setLocation(event.getLocation());
+        event1.setTimings(event.getTimings());
+        event1.setStatus(event.getStatus());
+        event1.getSkills_good_to_have().addAll(event.getSkills_good_to_have());
+        eventRepo.save(event1);
+        return "Event updated";
     }
     public EventModel getEvent(int eventId){
         Event event = eventRepo.findById(eventId).orElse(null);

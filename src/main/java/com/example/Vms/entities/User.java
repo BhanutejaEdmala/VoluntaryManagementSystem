@@ -25,6 +25,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int uid;
     @NotEmpty(message = "name shouldn't be empty")
+    @Column(unique = true)
     private String name;
     @Size(min = 3, message = "password size should be greater than 3 characters")
     @NotEmpty(message = "password shouldn't be empty")
@@ -45,4 +46,6 @@ public class User {
     private List<Volunteer> volunteers = new ArrayList<>();
     @JsonIgnore
     private List<String> certificates = new ArrayList<>();
+    @JsonIgnore
+    private List<String> messages = new ArrayList<>();
 }

@@ -21,4 +21,5 @@ public interface UserServiceInterface {
     String leaveEvent(int userId, int eventId, int organisationId);
 
     UserModel getUser(int userId);
+    List<String> viewMessages(String username);
 }

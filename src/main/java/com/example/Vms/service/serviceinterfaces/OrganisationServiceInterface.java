@@ -7,31 +7,35 @@ import com.example.Vms.models.OrganisationModel;
 import java.util.List;
 
 public interface OrganisationServiceInterface {
-    OrganisationModel save(OrganisationModel organisation);
+   String save(OrganisationModel organisation,String userName,String Password);
 
-    String addEvent(int organisationId, int eventId);
+    String addEvent(String username,String password,int organisationId, int eventId);
 
-    String assignEvent(int voluteerId, int eventId, int organisationId);
+    String assignEvent(String userName,String password,int voluteerId, int eventId, int organisationId);
 
     List<EventModel> viewEventsInOrganisation(int organisationId);
 
-    String sendMessage(int volunteerId, int organisationId, String message);
+    String sendMessage(String username,String password,int volunteerId, int organisationId, String message);
 
-    String groupMessage(int organisationId, String message);
+    String groupMessage(String userName,String password,int organisationId, String message);
 
-    String suggestVolunteers(int eventId, int organisationId);
+    String suggestVolunteers(String userName,String password,int eventId, int organisationId);
 
-    String removeOrganization(int organisationId);
+    String removeOrganization(String userName,String password,int organisationId);
 
-    String updateOrganisation(Organisation organisation, int organisationId);
+    String updateOrganisation(String userName,String password,Organisation organisation, int organisationId);
 
-    String closeEventForOrg(int eventId, int organisationId);
+    String closeEventForOrg(String username,String password,int eventId, int organisationId);
 
-    String removeVolunteer(int volunteerId);
+    String removeVolunteer(String username,String password,int organisationId,int volunteerId);
 
-    List<String> viewMessagesOfVolunteers(int organisationId);
+    List<String> viewMessagesOfVolunteers(String userName,String password,int organisationId);
 
-    OrganisationModel get(int organisationId);
+    OrganisationModel getOrganisation(int organisationId);
     boolean timingsCompare(String[] newTimings,String[] existTimings);
      String closeEvent(int eventId);
+    String addEventInOrganisation(String username,String password,EventModel eventModel ,int oid);
+ String approveJoinRequests(String userName,String password,int organisationId);
+ String approveSingleRequest(String username,String password,String user,int organisationId);
+ String rejectingRequests(String username,String password,int organisationId);
 }

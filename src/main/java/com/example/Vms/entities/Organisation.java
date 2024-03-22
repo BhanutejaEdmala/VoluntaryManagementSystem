@@ -47,4 +47,8 @@ public class Organisation {
     private List<String> messages = new ArrayList<>();
     @JsonIgnore
     private List<Integer> closedevents = new ArrayList<>();
+    @JsonIgnore
+    private List<String> adminDetails = new ArrayList<>();
+    @JsonIgnore
+    private List<Integer> waitingListUserIds = new ArrayList<>();
 }

@@ -22,8 +22,8 @@ public class VolunteerController {
     @Autowired
     UserServiceInterface userService;
    @PatchMapping("/add")
-    public ResponseEntity<?> add(@RequestParam int userId, @RequestParam int organisationId){
-       String result = volunteerService.add(userId,organisationId);
+    public ResponseEntity<?> add(@RequestParam String userName, @RequestParam int organisationId){
+       String result = volunteerService.add(userName,organisationId);
        if(result.equals("Registered Successfully"))
            return new ResponseEntity<>(result, HttpStatus.CREATED);
        return new ResponseEntity<>(result,HttpStatus.NOT_FOUND);
@@ -102,11 +102,16 @@ return  new ResponseEntity<>(organisations,HttpStatus.FOUND);
         return new ResponseEntity<>("No Volunteer Found",HttpStatus.NOT_FOUND);
     }
     @GetMapping("/eventsregisteredinorganisation")
-    public ResponseEntity<?> eventsInAParticulatOrg(@RequestParam int volunteerId,@RequestParam int organisationId){
-       List<EventModel> eventModels = volunteerService.eventsRegisteredByVolInOrg(volunteerId,organisationId);
+    public ResponseEntity<?> eventsInAParticularOrg(@RequestParam String username,@RequestParam String password,@RequestParam int volunteerId,@RequestParam int organisationId){
+       List<EventModel> eventModels = volunteerService.eventsRegisteredByVolInOrg(username,password,volunteerId,organisationId);
        if(null!=eventModels){
            return  new ResponseEntity<>(eventModels,HttpStatus.OK);
        }
        return new ResponseEntity<>("Check The Details You've Entered",HttpStatus.NOT_FOUND);
+    }
+    @PatchMapping("/joinrequest")
+    public ResponseEntity<?> sendJoinRequest(@RequestParam String userName,@RequestParam int organisationId){
+       String result = volunteerService.joinRequest(userName,organisationId);
+       return new ResponseEntity<>(result,HttpStatus.OK);
     }
 }
